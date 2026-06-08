@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pogodba o delu – spDokumenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f0f5ff;
+  --white: #ffffff;
+  --border: #e0e8ff;
+  --blue: #3d7eff;
+  --blue-light: #eef3ff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --green: #2e7d32;
+  --green-light: #e8f5e9;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: light; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  min-height: 100vh;
+}
+
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 2rem;
+  background: rgba(240,245,255,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo span { color: var(--blue); }
+
+.back-btn {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 7rem 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .container { grid-template-columns: 1fr; }
+}
+
+/* FORM */
+.form-panel {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.panel-header {
+  background: var(--blue);
+  padding: 1rem 1.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-section {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section:last-child { border-bottom: none; }
+
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.9rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.field-row.full { grid-template-columns: 1fr; }
+.field-row.tri { grid-template-columns: 1fr 1fr 1fr; }
+
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+input, select, textarea {
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  padding: 0.55rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: var(--white);
+}
+
+textarea { resize: vertical; min-height: 70px; }
+
+.generate-section { padding: 1.25rem 1.5rem; }
+
+.btn-generate {
+  width: 100%;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-generate:hover { opacity: 0.88; }
+
+/* PREVIEW */
+.preview-panel {
+  position: sticky;
+  top: 7rem;
+}
+
+.preview-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.doc-preview {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+  box-shadow: 0 4px 20px rgba(61,126,255,0.06);
+}
+
+.doc-title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--text);
+}
+
+.doc-subtitle {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.doc-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg);
+  border-radius: 8px;
+}
+
+.party-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.party-info { font-size: 0.75rem; line-height: 1.6; }
+.party-info strong { font-weight: 600; }
+
+.doc-section { margin-bottom: 1rem; }
+
+.doc-section-title {
+  font-weight: 700;
+  font-size: 0.78rem;
+  margin-bottom: 0.35rem;
+  color: var(--blue);
+}
+
+.doc-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.sign-line {
+  border-top: 1px solid var(--text);
+  padding-top: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 2rem;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  background: var(--green);
+  color: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.3s;
+  z-index: 1000;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">sp<span>Dokumenti</span></a>
+  <a href="index.html" class="back-btn">← Nazaj</a>
+</nav>
+
+<div class="container">
+  <!-- FORM -->
+  <div class="form-panel">
+    <div class="panel-header">📋 Pogodba o delu</div>
+
+    <!-- Naročnik -->
+    <div class="form-section">
+      <div class="section-title">Naročnik (ti)</div>
+      <div class="field-row full">
+        <div class="field">
+          <label>Ime in priimek / naziv</label>
+          <input type="text" id="narc-ime" placeholder="npr. Janez Novak s.p." oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Naslov</label>
+          <input type="text" id="narc-naslov" placeholder="npr. Slovenska 1" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Kraj</label>
+          <input type="text" id="narc-kraj" placeholder="npr. 1000 Ljubljana" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Davčna številka</label>
+          <input type="text" id="narc-davcna" placeholder="SI12345678" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Telefon / E-mail</label>
+          <input type="text" id="narc-kontakt" placeholder="janez@primer.si" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Izvajalec -->
+    <div class="form-section">
+      <div class="section-title">Izvajalec (stranka)</div>
+      <div class="field-row full">
+        <div class="field">
+          <label>Ime in priimek / naziv</label>
+          <input type="text" id="izv-ime" placeholder="npr. Ana Kovač" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Naslov</label>
+          <input type="text" id="izv-naslov" placeholder="npr. Glavna 5" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Kraj</label>
+          <input type="text" id="izv-kraj" placeholder="npr. 2000 Maribor" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>EMŠO / Davčna</label>
+          <input type="text" id="izv-davcna" placeholder="npr. 1234567890123" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Telefon / E-mail</label>
+          <input type="text" id="izv-kontakt" placeholder="ana@primer.si" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Delo -->
+    <div class="form-section">
+      <div class="section-title">Predmet pogodbe</div>
+      <div class="field-row full">
+        <div class="field">
+          <label>Opis dela</label>
+          <textarea id="delo-opis" placeholder="npr. Izvajalec se zavezuje izdelati spletno stran za naročnika, vključno z dizajnom in programiranjem." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Rok izvedbe</label>
+          <input type="date" id="delo-rok" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Kraj izvedbe</label>
+          <input type="text" id="delo-kraj" placeholder="npr. Ljubljana / na daljavo" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Plačilo -->
+    <div class="form-section">
+      <div class="section-title">Plačilo</div>
+      <div class="field-row tri">
+        <div class="field">
+          <label>Znesek (€)</label>
+          <input type="number" id="placilo-znesek" placeholder="500" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Rok plačila (dni)</label>
+          <input type="number" id="placilo-rok" placeholder="15" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Način plačila</label>
+          <select id="placilo-nacin" onchange="updatePreview()">
+            <option value="na TRR">Bančni račun</option>
+            <option value="v gotovini">Gotovina</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field">
+          <label>IBAN (za nakazilo)</label>
+          <input type="text" id="placilo-iban" placeholder="SI56 0123 4567 8901 234" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Datum in kraj -->
+    <div class="form-section">
+      <div class="section-title">Datum in kraj podpisa</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Kraj podpisa</label>
+          <input type="text" id="podpis-kraj" placeholder="Ljubljana" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Datum podpisa</label>
+          <input type="date" id="podpis-datum" oninput="updatePreview()">
+        </div>
+      </div>
+    </div>
+
+    <div class="generate-section">
+      <button class="btn-generate" onclick="generatePDF()">⬇ Prenesi pogodbo (PDF)</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-panel">
+    <div class="preview-label">Predogled pogodbe</div>
+    <div class="doc-preview">
+      <div class="doc-title">POGODBA O DELU</div>
+      <div class="doc-subtitle" id="prev-stevilka">Ljubljana, <span id="prev-datum">—</span></div>
+
+      <div class="doc-parties">
+        <div>
+          <div class="party-label">Naročnik</div>
+          <div class="party-info" id="prev-narc">—</div>
+        </div>
+        <div>
+          <div class="party-label">Izvajalec</div>
+          <div class="party-info" id="prev-izv">—</div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">1. Predmet pogodbe</div>
+        <div id="prev-opis">Stranki se sporazumeta o izvedbi naslednjih del: —</div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">2. Rok in kraj izvedbe</div>
+        <div id="prev-rok">Dela bodo izvedena do: — v/na: —</div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">3. Plačilo</div>
+        <div id="prev-placilo">Naročnik se zavezuje plačati izvajalcu znesek — € v roku — dni —.</div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">4. Ostale določbe</div>
+        <div>Pogodba je sestavljena v dveh enakih izvodih, od katerih vsaka stranka prejme enega. Morebitne spore bosta stranki reševali sporazumno, sicer pa je pristojno sodišče v kraju naročnika.</div>
+      </div>
+
+      <div class="doc-footer">
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;margin-bottom:0.25rem">Naročnik:</div>
+          <div style="font-size:0.72rem;color:var(--muted)" id="prev-narc-ime">—</div>
+          <div class="sign-line">Podpis</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;margin-bottom:0.25rem">Izvajalec:</div>
+          <div style="font-size:0.72rem;color:var(--muted)" id="prev-izv-ime">—</div>
+          <div class="sign-line">Podpis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Pogodba uspešno prenesena!</div>
+
+<script>
+function val(id) { return document.getElementById(id)?.value || ''; }
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('sl-SI');
+}
+
+function updatePreview() {
+  document.getElementById('prev-datum').textContent = formatDate(val('podpis-datum')) ;
+
+  // Naročnik
+  const narcInfo = [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: ' + val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean).join('\n');
+  document.getElementById('prev-narc').innerHTML = `<strong>${val('narc-ime') || '—'}</strong><br>${narcInfo.replace(/\n/g,'<br>')}`;
+  document.getElementById('prev-narc-ime').textContent = val('narc-ime') || '—';
+
+  // Izvajalec
+  const izvInfo = [val('izv-naslov'), val('izv-kraj'), val('izv-davcna'), val('izv-kontakt')].filter(Boolean).join('\n');
+  document.getElementById('prev-izv').innerHTML = `<strong>${val('izv-ime') || '—'}</strong><br>${izvInfo.replace(/\n/g,'<br>')}`;
+  document.getElementById('prev-izv-ime').textContent = val('izv-ime') || '—';
+
+  // Opis
+  document.getElementById('prev-opis').textContent = 'Stranki se sporazumeta o izvedbi naslednjih del: ' + (val('delo-opis') || '—');
+
+  // Rok
+  document.getElementById('prev-rok').textContent = `Dela bodo izvedena do: ${formatDate(val('delo-rok'))} v/na: ${val('delo-kraj') || '—'}`;
+
+  // Plačilo
+  const znesek = val('placilo-znesek') ? val('placilo-znesek') + ' €' : '—';
+  const rok = val('placilo-rok') ? val('placilo-rok') + ' dni' : '—';
+  const nacin = val('placilo-nacin');
+  const iban = val('placilo-iban') ? ` na IBAN: ${val('placilo-iban')}` : '';
+  document.getElementById('prev-placilo').textContent = `Naročnik se zavezuje plačati izvajalcu znesek ${znesek} v roku ${rok} ${nacin}${iban}.`;
+}
+
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const BLUE = [61, 126, 255];
+  const INK = [26, 26, 26];
+  const MUTED = [107, 114, 128];
+  const LIGHT = [240, 245, 255];
+
+  // Header
+  doc.setFillColor(...BLUE);
+  doc.rect(0, 0, 210, 22, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(14);
+  doc.text('POGODBA O DELU', 105, 13, { align: 'center' });
+
+  // Subtitle
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  const kraj = val('podpis-kraj') || 'Ljubljana';
+  const datum = val('podpis-datum') ? new Date(val('podpis-datum')).toLocaleDateString('sl-SI') : '—';
+  doc.text(`${kraj}, ${datum}`, 105, 19, { align: 'center' });
+
+  // Parties box
+  let y = 30;
+  doc.setFillColor(...LIGHT);
+  doc.rect(15, y, 85, 38, 'F');
+  doc.rect(110, y, 85, 38, 'F');
+
+  doc.setTextColor(...BLUE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.text('NAROČNIK', 20, y+6);
+  doc.text('IZVAJALEC', 115, y+6);
+
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.text(val('narc-ime') || '—', 20, y+12);
+  doc.text(val('izv-ime') || '—', 115, y+12);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+
+  const narcLines = [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: '+val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean);
+  narcLines.forEach((l,i) => doc.text(l, 20, y+17+i*4));
+
+  const izvLines = [val('izv-naslov'), val('izv-kraj'), val('izv-davcna'), val('izv-kontakt')].filter(Boolean);
+  izvLines.forEach((l,i) => doc.text(l, 115, y+17+i*4));
+
+  // Sections
+  y = 76;
+  const sections = [
+    {
+      title: '1. Predmet pogodbe',
+      text: `Stranki se sporazumeta o izvedbi naslednjih del:\n${val('delo-opis') || '—'}`
+    },
+    {
+      title: '2. Rok in kraj izvedbe',
+      text: `Dela bodo izvedena do: ${val('delo-rok') ? new Date(val('delo-rok')).toLocaleDateString('sl-SI') : '—'}\nKraj izvedbe: ${val('delo-kraj') || '—'}`
+    },
+    {
+      title: '3. Plačilo',
+      text: `Naročnik se zavezuje plačati izvajalcu znesek ${val('placilo-znesek') || '—'} EUR v roku ${val('placilo-rok') || '—'} dni ${val('placilo-nacin')}${val('placilo-iban') ? ' na IBAN: '+val('placilo-iban') : ''}.`
+    },
+    {
+      title: '4. Ostale določbe',
+      text: 'Pogodba je sestavljena v dveh enakih izvodih, od katerih vsaka stranka prejme enega. Morebitne spore bosta stranki reševali sporazumno, sicer pa je pristojno sodišče v kraju naročnika. Pogodba začne veljati z dnem podpisa obeh pogodbenih strank.'
+    }
+  ];
+
+  sections.forEach(s => {
+    doc.setTextColor(...BLUE);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.text(s.title, 15, y);
+    y += 5;
+
+    doc.setTextColor(...INK);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(8);
+    const lines = doc.splitTextToSize(s.text, 180);
+    doc.text(lines, 15, y);
+    y += lines.length * 4.5 + 5;
+  });
+
+  // Signatures
+  y += 5;
+  doc.setDrawColor(...MUTED);
+  doc.setLineWidth(0.2);
+  doc.line(15, y, 195, y);
+  y += 8;
+
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('Naročnik:', 15, y);
+  doc.text('Izvajalec:', 110, y);
+
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...MUTED);
+  doc.setFontSize(7.5);
+  doc.text(val('narc-ime') || '—', 15, y+5);
+  doc.text(val('izv-ime') || '—', 110, y+5);
+
+  doc.setDrawColor(...INK);
+  doc.line(15, y+18, 90, y+18);
+  doc.line(110, y+18, 185, y+18);
+
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text('Podpis', 15, y+22);
+  doc.text('Podpis', 110, y+22);
+
+  // Footer
+  doc.setFontSize(6.5);
+  doc.setTextColor(...MUTED);
+  doc.text('Generirano z spDokumenti.si', 105, 287, { align: 'center' });
+
+  doc.save('Pogodba-o-delu.pdf');
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Init
+window.onload = () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('podpis-datum').value = today;
+  updatePreview();
+};
+</script>
+</body>
+</html>
