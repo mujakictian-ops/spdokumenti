@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avtorska pogodba – spDokumenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f0f5ff;
+  --white: #ffffff;
+  --border: #e0e8ff;
+  --blue: #3d7eff;
+  --blue-light: #eef3ff;
+  --text: #1a1a1a;
+  --muted: #6b7280;
+  --green: #2e7d32;
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: light; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg) !important; color: var(--text) !important; min-height: 100vh; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 2rem;
+  background: rgba(240,245,255,0.95); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.logo { font-weight: 700; font-size: 1.15rem; color: var(--text); text-decoration: none; }
+.logo span { color: var(--blue); }
+.back-btn { background: var(--white); border: 1.5px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 7rem 1.5rem 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+.form-panel { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+.panel-header { background: var(--blue); padding: 1rem 1.5rem; color: white; font-weight: 600; font-size: 0.9rem; }
+
+.form-section { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+.form-section:last-child { border-bottom: none; }
+.section-title { font-size: 0.7rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.9rem; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+.field-row.full { grid-template-columns: 1fr; }
+.field-row.tri { grid-template-columns: 1fr 1fr 1fr; }
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+label { font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+input, select, textarea { border: 1.5px solid var(--border); background: var(--bg); padding: 0.55rem 0.85rem; font-family: inherit; font-size: 0.85rem; color: var(--text); border-radius: 8px; transition: border-color 0.2s; width: 100%; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue); background: var(--white); }
+textarea { resize: vertical; min-height: 70px; }
+
+.info-box { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; font-size: 0.78rem; color: #7a5c00; line-height: 1.5; }
+
+.generate-section { padding: 1.25rem 1.5rem; }
+.btn-generate { width: 100%; background: var(--blue); color: white; border: none; padding: 0.9rem; border-radius: var(--radius); font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.btn-generate:hover { opacity: 0.88; }
+
+.preview-panel { position: sticky; top: 7rem; }
+.preview-label { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+
+.doc-preview { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 2rem; font-size: 0.78rem; line-height: 1.7; color: var(--text); box-shadow: 0 4px 20px rgba(61,126,255,0.06); max-height: 80vh; overflow-y: auto; }
+.doc-title { text-align: center; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+.doc-subtitle { text-align: center; font-size: 0.72rem; color: var(--muted); margin-bottom: 1.5rem; }
+.doc-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg); border-radius: 8px; }
+.party-label { font-size: 0.65rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+.party-info { font-size: 0.75rem; line-height: 1.6; }
+.doc-section { margin-bottom: 0.9rem; }
+.doc-section-title { font-weight: 700; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--blue); }
+.doc-footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.sign-line { border-top: 1px solid var(--text); padding-top: 0.35rem; font-size: 0.68rem; color: var(--muted); margin-top: 2rem; }
+
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--green); color: white; padding: 0.9rem 1.5rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600; opacity: 0; transform: translateY(8px); transition: all 0.3s; z-index: 1000; }
+.toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">sp<span>Dokumenti</span></a>
+  <a href="index.html" class="back-btn">← Nazaj</a>
+</nav>
+
+<div class="container">
+  <div class="form-panel">
+    <div class="panel-header">✍️ Avtorska pogodba – skladno z ZASP in OZ</div>
+
+    <!-- Naročnik -->
+    <div class="form-section">
+      <div class="section-title">Naročnik (ti)</div>
+      <div class="field-row full">
+        <div class="field"><label>Ime in priimek / naziv podjetja</label>
+          <input type="text" id="narc-ime" placeholder="npr. Janez Novak s.p." oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label>
+          <input type="text" id="narc-naslov" placeholder="npr. Slovenska 1" oninput="updatePreview()"></div>
+        <div class="field"><label>Kraj in poštna številka</label>
+          <input type="text" id="narc-kraj" placeholder="npr. 1000 Ljubljana" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Davčna številka</label>
+          <input type="text" id="narc-davcna" placeholder="SI12345678" oninput="updatePreview()"></div>
+        <div class="field"><label>E-mail / Telefon</label>
+          <input type="text" id="narc-kontakt" placeholder="janez@primer.si" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <!-- Avtor -->
+    <div class="form-section">
+      <div class="section-title">Avtor (izvajalec)</div>
+      <div class="field-row full">
+        <div class="field"><label>Ime in priimek</label>
+          <input type="text" id="avt-ime" placeholder="npr. Ana Kovač" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label>
+          <input type="text" id="avt-naslov" placeholder="npr. Glavna 5" oninput="updatePreview()"></div>
+        <div class="field"><label>Kraj in poštna številka</label>
+          <input type="text" id="avt-kraj" placeholder="npr. 2000 Maribor" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>EMŠO / Davčna številka</label>
+          <input type="text" id="avt-davcna" placeholder="npr. 1234567890123" oninput="updatePreview()"></div>
+        <div class="field"><label>E-mail / Telefon</label>
+          <input type="text" id="avt-kontakt" placeholder="ana@primer.si" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <!-- Avtorsko delo -->
+    <div class="form-section">
+      <div class="section-title">Avtorsko delo (99. člen ZASP)</div>
+      <div class="info-box">⚠️ Avtorska pogodba se lahko sklene SAMO za dela s področja književnosti, znanosti, umetnosti ali računalniških programov (ZASP). Za ostala dela uporabite Pogodbo o delu.</div>
+      <div class="field-row">
+        <div class="field"><label>Vrsta avtorskega dela</label>
+          <select id="delo-vrsta" onchange="updatePreview()">
+            <option value="računalniški program">Računalniški program</option>
+            <option value="pisano delo (članek, priročnik, studija)">Pisano delo (članek, priročnik)</option>
+            <option value="grafično/likovno delo">Grafično / likovno delo</option>
+            <option value="fotografsko delo">Fotografsko delo</option>
+            <option value="arhitekturno delo">Arhitekturno delo</option>
+            <option value="glasbeno delo">Glasbeno delo</option>
+            <option value="avdiovizualno delo">Avdiovizualno delo</option>
+            <option value="drugo avtorsko delo">Drugo avtorsko delo</option>
+          </select>
+        </div>
+        <div class="field"><label>Naslov / naziv dela</label>
+          <input type="text" id="delo-naziv" placeholder="npr. Spletna stran podjetja XY" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full">
+        <div class="field"><label>Opis avtorskega dela</label>
+          <textarea id="delo-opis" placeholder="npr. Avtor se zavezuje ustvariti in izročiti naročniku spletno stran, vključno z dizajnom, programiranjem in vsebino..." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Rok izročitve dela</label>
+          <input type="date" id="delo-rok" oninput="updatePreview()"></div>
+        <div class="field"><label>Kraj izvedbe</label>
+          <input type="text" id="delo-kraj" placeholder="npr. na daljavo / Ljubljana" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <!-- Prenos pravic -->
+    <div class="form-section">
+      <div class="section-title">Prenos avtorskih pravic (ZASP)</div>
+      <div class="field-row">
+        <div class="field"><label>Obseg prenosa pravic</label>
+          <select id="prenos-obseg" onchange="updatePreview()">
+            <option value="izključni prenos vseh materialnih avtorskih pravic">Izključni prenos – vse pravice na naročnika</option>
+            <option value="neizključni prenos materialnih avtorskih pravic">Neizključni prenos – avtor lahko dela še drugje</option>
+            <option value="prenos za določeno področje uporabe">Prenos za določeno področje</option>
+          </select>
+        </div>
+        <div class="field"><label>Ozemlje veljavnosti</label>
+          <select id="prenos-ozemlje" onchange="updatePreview()">
+            <option value="Republiki Sloveniji">Slovenija</option>
+            <option value="celotnem svetu">Celotni svet</option>
+            <option value="Evropski uniji">EU</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Trajanje prenosa pravic</label>
+          <select id="prenos-trajanje" onchange="updatePreview()">
+            <option value="za ves čas trajanja avtorske pravice">Za ves čas trajanja avtorske pravice</option>
+            <option value="za 5 let">5 let</option>
+            <option value="za 10 let">10 let</option>
+            <option value="za 3 leta">3 leta</option>
+          </select>
+        </div>
+        <div class="field"><label>Moralna pravica avtorstva</label>
+          <select id="moralna" onchange="updatePreview()">
+            <option value="Avtor se strinja z navedbo svojega avtorstva pri delu.">Avtor naveden pri delu</option>
+            <option value="Avtor soglaša z objavo dela brez navedbe svojega imena.">Anonimna objava</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Honorar -->
+    <div class="form-section">
+      <div class="section-title">Honorar in davki</div>
+      <div class="info-box">⚠️ Naročnik mora od honorarja odtegniti akontacijo dohodnine (25% od 90% bruto zneska) in prispevke (PIZ 15,5% + ZZ 6,36%). Posvetujte se z računovodjo.</div>
+      <div class="field-row tri">
+        <div class="field"><label>Bruto honorar (€)</label>
+          <input type="number" id="hon-bruto" placeholder="1000" oninput="updatePreview()"></div>
+        <div class="field"><label>Rok plačila (dni)</label>
+          <input type="number" id="hon-rok" placeholder="15" oninput="updatePreview()"></div>
+        <div class="field"><label>Način plačila</label>
+          <select id="hon-nacin" onchange="updatePreview()">
+            <option value="na TRR">Bančni račun (TRR)</option>
+            <option value="v gotovini">Gotovina</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row full">
+        <div class="field"><label>IBAN avtorja</label>
+          <input type="text" id="hon-iban" placeholder="SI56 0123 4567 8901 234" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <!-- Podpis -->
+    <div class="form-section">
+      <div class="section-title">Datum in kraj podpisa</div>
+      <div class="field-row">
+        <div class="field"><label>Kraj podpisa</label>
+          <input type="text" id="podpis-kraj" placeholder="Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum podpisa</label>
+          <input type="date" id="podpis-datum" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <div class="generate-section">
+      <button class="btn-generate" onclick="generatePDF()">⬇ Prenesi avtorsko pogodbo (PDF)</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-panel">
+    <div class="preview-label">Predogled pogodbe</div>
+    <div class="doc-preview">
+      <div class="doc-title">AVTORSKA POGODBA</div>
+      <div class="doc-subtitle">po 99. členu Zakona o avtorski in sorodnih pravicah (ZASP)</div>
+      <div class="doc-subtitle"><span id="prev-kraj-datum">Ljubljana, —</span></div>
+
+      <div class="doc-parties">
+        <div>
+          <div class="party-label">Naročnik</div>
+          <div class="party-info" id="prev-narc">—</div>
+        </div>
+        <div>
+          <div class="party-label">Avtor</div>
+          <div class="party-info" id="prev-avt">—</div>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <div class="doc-section-title">1. Predmet pogodbe</div>
+        <div id="prev-predmet">—</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">2. Rok izročitve</div>
+        <div id="prev-rok">—</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">3. Prenos avtorskih pravic</div>
+        <div id="prev-prenos">—</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">4. Moralne avtorske pravice</div>
+        <div id="prev-moralna">—</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">5. Honorar</div>
+        <div id="prev-honorar">—</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">6. Davki in prispevki</div>
+        <div>Naročnik bo od izplačanega honorarja odtegnil in plačal akontacijo dohodnine ter prispevke za socialno varnost v skladu z veljavno davčno zakonodajo Republike Slovenije. Naročnik bo avtorju izplačal neto znesek honorarja po odtegnitvi vseh obveznih dajatev.</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">7. Varstvo osebnih podatkov (GDPR)</div>
+        <div>Pogodbeni stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2. Podatki se bodo uporabili izključno za namen izvajanja te pogodbe.</div>
+      </div>
+      <div class="doc-section">
+        <div class="doc-section-title">8. Ostale določbe</div>
+        <div>Za vse, kar ni urejeno s to pogodbo, se uporabljajo določbe ZASP in Obligacijskega zakonika (OZ). Pogodba je sestavljena v dveh izvodih. Spori se rešujejo sporazumno, sicer je pristojno sodišče v kraju naročnika.</div>
+      </div>
+
+      <div class="doc-footer">
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;margin-bottom:0.25rem">Naročnik:</div>
+          <div style="font-size:0.72rem;color:var(--muted)" id="prev-narc-ime">—</div>
+          <div class="sign-line">Podpis in žig</div>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;margin-bottom:0.25rem">Avtor:</div>
+          <div style="font-size:0.72rem;color:var(--muted)" id="prev-avt-ime">—</div>
+          <div class="sign-line">Podpis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Avtorska pogodba uspešno prenesena!</div>
+
+<script>
+function val(id) { return document.getElementById(id)?.value || ''; }
+function formatDate(d) { return d ? new Date(d).toLocaleDateString('sl-SI') : '—'; }
+
+function updatePreview() {
+  const kraj = val('podpis-kraj') || 'Ljubljana';
+  const datum = formatDate(val('podpis-datum'));
+  document.getElementById('prev-kraj-datum').textContent = `${kraj}, ${datum}`;
+
+  // Naročnik
+  const narcLines = [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: '+val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean);
+  document.getElementById('prev-narc').innerHTML = `<strong>${val('narc-ime')||'—'}</strong><br>${narcLines.join('<br>')}`;
+  document.getElementById('prev-narc-ime').textContent = val('narc-ime') || '—';
+
+  // Avtor
+  const avtLines = [val('avt-naslov'), val('avt-kraj'), val('avt-davcna'), val('avt-kontakt')].filter(Boolean);
+  document.getElementById('prev-avt').innerHTML = `<strong>${val('avt-ime')||'—'}</strong><br>${avtLines.join('<br>')}`;
+  document.getElementById('prev-avt-ime').textContent = val('avt-ime') || '—';
+
+  // Predmet
+  document.getElementById('prev-predmet').textContent =
+    `Avtor se po 99. členu ZASP zavezuje ustvariti in izročiti naročniku naslednje avtorsko delo: ${val('delo-vrsta')} z naslovom "${val('delo-naziv')||'—'}". ${val('delo-opis')||''}`;
+
+  // Rok
+  document.getElementById('prev-rok').textContent =
+    `Avtor se zavezuje izročiti dokončano avtorsko delo naročniku do: ${formatDate(val('delo-rok'))}. Kraj: ${val('delo-kraj')||'—'}.`;
+
+  // Prenos
+  document.getElementById('prev-prenos').textContent =
+    `Z izročitvijo dela in plačilom honorarja avtor prenese ${val('prenos-obseg')} na naročnika za ${val('prenos-trajanje')} na ozemlju ${val('prenos-ozemlje')||'Republiki Sloveniji'}. Moralne avtorske pravice ostanejo avtorju.`;
+
+  // Moralna
+  document.getElementById('prev-moralna').textContent = val('moralna');
+
+  // Honorar
+  const bruto = val('hon-bruto') ? val('hon-bruto') + ' EUR (bruto)' : '—';
+  document.getElementById('prev-honorar').textContent =
+    `Naročnik se zavezuje plačati avtorju honorar v višini ${bruto} v roku ${val('hon-rok')||'—'} dni ${val('hon-nacin')}${val('hon-iban') ? ' na IBAN: '+val('hon-iban') : ''}.`;
+}
+
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const BLUE = [61,126,255];
+  const INK = [26,26,26];
+  const MUTED = [107,114,128];
+  const LIGHT = [240,245,255];
+  const YELLOW = [255,248,225];
+
+  // Header
+  doc.setFillColor(...BLUE);
+  doc.rect(0, 0, 210, 26, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(14);
+  doc.text('AVTORSKA POGODBA', 105, 11, { align: 'center' });
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.text('po 99. členu Zakona o avtorski in sorodnih pravicah (ZASP)', 105, 17, { align: 'center' });
+  doc.setFontSize(7);
+  doc.text(`${val('podpis-kraj')||'Ljubljana'}, ${formatDate(val('podpis-datum'))}`, 105, 23, { align: 'center' });
+
+  // Parties
+  let y = 32;
+  doc.setFillColor(...LIGHT);
+  doc.rect(15, y, 85, 42, 'F');
+  doc.rect(110, y, 85, 42, 'F');
+
+  doc.setTextColor(...BLUE);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.text('NAROČNIK', 20, y+6);
+  doc.text('AVTOR', 115, y+6);
+
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.text(val('narc-ime')||'—', 20, y+12);
+  doc.text(val('avt-ime')||'—', 115, y+12);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: '+val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean).forEach((l,i) => doc.text(l, 20, y+17+i*4.5));
+  [val('avt-naslov'), val('avt-kraj'), val('avt-davcna'), val('avt-kontakt')].filter(Boolean).forEach((l,i) => doc.text(l, 115, y+17+i*4.5));
+
+  // Warning box
+  y = 80;
+  doc.setFillColor(...YELLOW);
+  doc.rect(15, y, 180, 10, 'F');
+  doc.setTextColor(122,92,0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  doc.text('⚠ Pogodba sklenjena skladno z ZASP (99. člen) in Obligacijskim zakonikom (OZ) RS', 105, y+6.5, { align: 'center' });
+
+  // Sections
+  y = 96;
+  const sections = [
+    {
+      title: '1. Predmet pogodbe (99. člen ZASP)',
+      text: `Avtor se po 99. členu ZASP zavezuje ustvariti in izročiti naročniku naslednje avtorsko delo:\n${val('delo-vrsta')} z naslovom: "${val('delo-naziv')||'—'}"\n${val('delo-opis')||''}`
+    },
+    {
+      title: '2. Rok in kraj izročitve',
+      text: `Avtor se zavezuje izročiti dokončano avtorsko delo naročniku do: ${formatDate(val('delo-rok'))}.\nKraj izvedbe: ${val('delo-kraj')||'—'}.`
+    },
+    {
+      title: '3. Prenos materialnih avtorskih pravic (ZASP)',
+      text: `Z izročitvijo dela in plačilom honorarja avtor prenese ${val('prenos-obseg')} na naročnika za ${val('prenos-trajanje')} na ozemlju ${val('prenos-ozemlje')||'Republiki Sloveniji'}. Moralne avtorske pravice (pravica do avtorstva, nedotakljivosti dela) ostanejo avtorju v skladu z ZASP in so neprenosljive.`
+    },
+    {
+      title: '4. Moralne avtorske pravice',
+      text: val('moralna') + ' Naročnik se zavezuje, da ne bo posegal v moralne avtorske pravice avtorja.'
+    },
+    {
+      title: '5. Honorar',
+      text: `Naročnik se zavezuje plačati avtorju honorar v višini ${val('hon-bruto')||'—'} EUR (bruto) v roku ${val('hon-rok')||'—'} dni ${val('hon-nacin')}${val('hon-iban') ? ' na IBAN: '+val('hon-iban') : ''}.`
+    },
+    {
+      title: '6. Davki in prispevki',
+      text: 'Naročnik bo od honorarja odtegnil akontacijo dohodnine (25% od 90% bruto) ter prispevke za PIZ (15,5%) in ZZ (6,36%) v skladu z veljavno zakonodajo RS. Avtorju bo izplačan neto znesek.'
+    },
+    {
+      title: '7. Varstvo osebnih podatkov (GDPR – Uredba EU 2016/679 in ZVOP-2)',
+      text: 'Stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 in ZVOP-2. Podatki se bodo uporabili izključno za namen izvajanja te pogodbe.'
+    },
+    {
+      title: '8. Ostale določbe',
+      text: 'Za vse, kar ni urejeno s to pogodbo, se smiselno uporabljajo določbe ZASP in OZ. Pogodba je sestavljena v dveh enakih izvodih. Morebitne spore bosta stranki reševali sporazumno, sicer je pristojno sodišče v kraju naročnika.'
+    }
+  ];
+
+  sections.forEach(s => {
+    if (y > 255) return;
+    doc.setTextColor(...BLUE);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    doc.text(s.title, 15, y);
+    y += 5;
+    doc.setTextColor(...INK);
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(7.5);
+    const lines = doc.splitTextToSize(s.text, 180);
+    doc.text(lines, 15, y);
+    y += lines.length * 4 + 4;
+  });
+
+  // Signatures
+  y = Math.max(y + 5, 240);
+  doc.setDrawColor(...MUTED);
+  doc.setLineWidth(0.2);
+  doc.line(15, y, 195, y);
+  y += 7;
+
+  doc.setTextColor(...INK);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.text('Naročnik:', 15, y);
+  doc.text('Avtor:', 110, y);
+
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...MUTED);
+  doc.setFontSize(7.5);
+  doc.text(val('narc-ime')||'—', 15, y+5);
+  doc.text(val('avt-ime')||'—', 110, y+5);
+
+  doc.setDrawColor(...INK);
+  doc.line(15, y+18, 90, y+18);
+  doc.line(110, y+18, 185, y+18);
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text('Podpis in žig', 15, y+22);
+  doc.text('Podpis', 110, y+22);
+
+  // Footer
+  doc.setFontSize(6);
+  doc.text('Generirano z spDokumenti.si | Skladno z ZASP (99. člen) in OZ RS', 105, 288, { align: 'center' });
+
+  doc.save('Avtorska-pogodba.pdf');
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+window.onload = () => {
+  document.getElementById('podpis-datum').value = new Date().toISOString().split('T')[0];
+  const rok = new Date(); rok.setDate(rok.getDate() + 30);
+  document.getElementById('delo-rok').value = rok.toISOString().split('T')[0];
+  updatePreview();
+};
+</script>
+</body>
+</html>
