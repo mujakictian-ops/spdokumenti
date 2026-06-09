@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDA – Sporazum o zaupnosti – spDokumenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f0f5ff;--white:#fff;--border:#e0e8ff;--blue:#3d7eff;--text:#1a1a1a;--muted:#6b7280;--green:#2e7d32;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}html{color-scheme:light;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg)!important;color:var(--text)!important;min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2rem;background:rgba(240,245,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+.logo{font-weight:700;font-size:1.15rem;color:var(--text);text-decoration:none;}.logo span{color:var(--blue);}
+.back-btn{background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;}
+.container{max-width:1100px;margin:0 auto;padding:7rem 1.5rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+@media(max-width:768px){.container{grid-template-columns:1fr;}}
+.form-panel{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;}
+.panel-header{background:var(--blue);padding:1rem 1.5rem;color:white;font-weight:600;font-size:.9rem;}
+.form-section{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
+.form-section:last-child{border-bottom:none;}
+.section-title{font-size:.7rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+.field-row.full{grid-template-columns:1fr;}
+.field{display:flex;flex-direction:column;gap:.3rem;}
+label{font-size:.72rem;font-weight:600;color:var(--muted);}
+input,select,textarea{border:1.5px solid var(--border);background:var(--bg);padding:.55rem .85rem;font-family:inherit;font-size:.85rem;color:var(--text);border-radius:8px;transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--white);}
+textarea{resize:vertical;min-height:70px;}
+.btn-generate{width:100%;background:var(--blue);color:white;border:none;padding:.9rem;border-radius:var(--radius);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-generate:hover{opacity:.88;}
+.generate-section{padding:1.25rem 1.5rem;}
+.preview-panel{position:sticky;top:7rem;}
+.preview-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+.doc-preview{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:2rem;font-size:.78rem;line-height:1.7;color:var(--text);box-shadow:0 4px 20px rgba(61,126,255,.06);max-height:82vh;overflow-y:auto;}
+.doc-title{text-align:center;font-size:1.1rem;font-weight:700;margin-bottom:.2rem;}
+.doc-sub{text-align:center;font-size:.7rem;color:var(--muted);margin-bottom:1.5rem;}
+.doc-parties{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;padding:1rem;background:var(--bg);border-radius:8px;}
+.party-lbl{font-size:.62rem;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:.3rem;}
+.party-txt{font-size:.75rem;line-height:1.6;}
+.doc-section{margin-bottom:.9rem;}
+.doc-section-title{font-weight:700;font-size:.78rem;margin-bottom:.35rem;color:var(--blue);}
+.doc-footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.sign-line{border-top:1px solid var(--text);padding-top:.35rem;font-size:.68rem;color:var(--muted);margin-top:2rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:white;padding:.9rem 1.5rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;z-index:1000;}
+.toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">sp<span>Dokumenti</span></a>
+  <a href="index.html" class="back-btn">← Nazaj</a>
+</nav>
+<div class="container">
+  <div class="form-panel">
+    <div class="panel-header">🔒 NDA – Sporazum o zaupnosti</div>
+    <div class="form-section">
+      <div class="section-title">Prva stranka</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="s1-ime" placeholder="npr. Janez Novak s.p." oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label><input type="text" id="s1-naslov" placeholder="Slovenska 1, 1000 Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Davčna številka</label><input type="text" id="s1-davcna" placeholder="SI12345678" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Druga stranka</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="s2-ime" placeholder="npr. Podjetje d.o.o." oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label><input type="text" id="s2-naslov" placeholder="Glavna 5, 2000 Maribor" oninput="updatePreview()"></div>
+        <div class="field"><label>Davčna številka</label><input type="text" id="s2-davcna" placeholder="SI87654321" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Predmet zaupnosti</div>
+      <div class="field-row full"><div class="field"><label>Namen sodelovanja (zakaj sklepate NDA)</label>
+        <input type="text" id="nda-namen" placeholder="npr. Pogajanja za skupni poslovni projekt, razvoj programske opreme" oninput="updatePreview()">
+      </div></div>
+      <div class="field-row full"><div class="field"><label>Zaupne informacije vključujejo</label>
+        <textarea id="nda-info" placeholder="npr. Poslovne strategije, finančni podatki, tehnična dokumentacija, izvorna koda, seznami strank, cenovne politike, poslovni načrti..." oninput="updatePreview()"></textarea>
+      </div></div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Pogoji sporazuma</div>
+      <div class="field-row">
+        <div class="field"><label>Trajanje zaupnosti</label>
+          <select id="nda-trajanje" onchange="updatePreview()">
+            <option value="2 leti">2 leti</option>
+            <option value="3 leta">3 leta</option>
+            <option value="5 let">5 let</option>
+            <option value="za nedoločen čas">Za nedoločen čas</option>
+          </select>
+        </div>
+        <div class="field"><label>Vrsta NDA</label>
+          <select id="nda-vrsta" onchange="updatePreview()">
+            <option value="enostranski">Enostranski (samo ena razkriva)</option>
+            <option value="vzajemni">Vzajemni (obe stranki razkrivata)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row full"><div class="field"><label>Pogodbena kazen za kršitev (€) – neobvezno</label>
+        <input type="number" id="nda-kazen" placeholder="npr. 5000" oninput="updatePreview()">
+      </div></div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Datum in kraj podpisa</div>
+      <div class="field-row">
+        <div class="field"><label>Kraj</label><input type="text" id="pod-kraj" placeholder="Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum</label><input type="date" id="pod-datum" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="generate-section">
+      <button class="btn-generate" onclick="generatePDF()">⬇ Prenesi NDA (PDF)</button>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-label">Predogled NDA</div>
+    <div class="doc-preview">
+      <div class="doc-title">SPORAZUM O ZAUPNOSTI (NDA)</div>
+      <div class="doc-sub">Non-Disclosure Agreement</div>
+      <div class="doc-sub" id="prev-datum">—</div>
+      <div class="doc-parties">
+        <div><div class="party-lbl">Prva stranka</div><div class="party-txt" id="prev-s1">—</div></div>
+        <div><div class="party-lbl">Druga stranka</div><div class="party-txt" id="prev-s2">—</div></div>
+      </div>
+      <div class="doc-section"><div class="doc-section-title">1. Namen</div><div id="prev-namen">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">2. Zaupne informacije</div><div id="prev-info">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">3. Obveznost zaupnosti</div><div id="prev-obveza">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">4. Trajanje</div><div id="prev-trajanje">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">5. Izjeme</div><div>Obveznost zaupnosti ne velja za informacije, ki so javno dostopne, jih je prejemnik že poznal pred podpisom tega sporazuma, ali jih je prejel od tretje strani brez obveznosti zaupnosti.</div></div>
+      <div class="doc-section"><div class="doc-section-title">6. Pogodbena kazen</div><div id="prev-kazen">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">7. GDPR</div><div>Stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2.</div></div>
+      <div class="doc-section"><div class="doc-section-title">8. Ostale določbe</div><div>Za vse, kar ni urejeno s tem sporazumom, velja OZ RS. Pristojno sodišče je v kraju prve stranke.</div></div>
+      <div class="doc-footer">
+        <div><div style="font-size:.7rem;font-weight:700;margin-bottom:.25rem">Prva stranka:</div><div style="font-size:.72rem;color:var(--muted)" id="prev-s1-ime">—</div><div class="sign-line">Podpis</div></div>
+        <div><div style="font-size:.7rem;font-weight:700;margin-bottom:.25rem">Druga stranka:</div><div style="font-size:.72rem;color:var(--muted)" id="prev-s2-ime">—</div><div class="sign-line">Podpis</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">✓ NDA uspešno prenesen!</div>
+<script>
+function val(id){return document.getElementById(id)?.value||'';}
+function formatDate(d){return d?new Date(d).toLocaleDateString('sl-SI'):'—';}
+
+function updatePreview(){
+  document.getElementById('prev-datum').textContent=`${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}`;
+  document.getElementById('prev-s1').innerHTML=`<strong>${val('s1-ime')||'—'}</strong><br>${[val('s1-naslov'),val('s1-davcna')?'DŠ: '+val('s1-davcna'):''].filter(Boolean).join('<br>')}`;
+  document.getElementById('prev-s2').innerHTML=`<strong>${val('s2-ime')||'—'}</strong><br>${[val('s2-naslov'),val('s2-davcna')?'DŠ: '+val('s2-davcna'):''].filter(Boolean).join('<br>')}`;
+  document.getElementById('prev-s1-ime').textContent=val('s1-ime')||'—';
+  document.getElementById('prev-s2-ime').textContent=val('s2-ime')||'—';
+  document.getElementById('prev-namen').textContent=`Stranki sklepata ta sporazum v zvezi z: ${val('nda-namen')||'—'}.`;
+  document.getElementById('prev-info').textContent=`Zaupne informacije vključujejo zlasti: ${val('nda-info')||'—'}`;
+  const vrsta=val('nda-vrsta');
+  document.getElementById('prev-obveza').textContent=vrsta==='vzajemni'
+    ? 'Obe stranki se zavezujeta, da zaupnih informacij ne bosta razkrili tretjim osebam brez pisnega soglasja druge stranke, ter da jih bosta uporabili izključno za namen tega sporazuma.'
+    : `${val('s2-ime')||'Prejemnik'} se zavezuje, da zaupnih informacij ${val('s1-ime')||'razkrivatelja'} ne bo razkrila tretjim osebam ter jih bo uporabila izključno za namen tega sporazuma.`;
+  document.getElementById('prev-trajanje').textContent=`Obveznost zaupnosti velja ${val('nda-trajanje')} od datuma podpisa tega sporazuma.`;
+  document.getElementById('prev-kazen').textContent=val('nda-kazen')
+    ? `V primeru kršitve tega sporazuma je kršitelj dolžan plačati pogodbeno kazen v višini ${parseFloat(val('nda-kazen')).toFixed(2).replace('.',',')} EUR, ne glede na dejansko nastalo škodo.`
+    : 'V primeru kršitve tega sporazuma je kršitelj odgovoren za vso nastalo škodo v skladu z določbami OZ.';
+}
+
+function generatePDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const BLUE=[61,126,255],INK=[26,26,26],MUTED=[107,114,128],LIGHT=[240,245,255];
+
+  doc.setFillColor(...BLUE);doc.rect(0,0,210,28,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('SPORAZUM O ZAUPNOSTI (NDA)',105,12,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('Non-Disclosure Agreement',105,19,{align:'center'});
+  doc.setFontSize(7);doc.text(`${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}`,105,25,{align:'center'});
+
+  let y=34;
+  doc.setFillColor(...LIGHT);doc.rect(15,y,85,38,'F');doc.rect(110,y,85,38,'F');
+  doc.setTextColor(...BLUE);doc.setFont('helvetica','bold');doc.setFontSize(7);
+  doc.text('PRVA STRANKA',20,y+6);doc.text('DRUGA STRANKA',115,y+6);
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text(val('s1-ime')||'—',20,y+12);doc.text(val('s2-ime')||'—',115,y+12);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUTED);
+  [val('s1-naslov'),val('s1-davcna')?'DŠ: '+val('s1-davcna'):''].filter(Boolean).forEach((l,i)=>doc.text(l,20,y+17+i*4.5));
+  [val('s2-naslov'),val('s2-davcna')?'DŠ: '+val('s2-davcna'):''].filter(Boolean).forEach((l,i)=>doc.text(l,115,y+17+i*4.5));
+
+  y=78;
+  const vrsta=val('nda-vrsta');
+  const sections=[
+    {title:'1. Namen',text:`Stranki sklepata ta sporazum v zvezi z: ${val('nda-namen')||'—'}.`},
+    {title:'2. Zaupne informacije',text:`Zaupne informacije vključujejo zlasti: ${val('nda-info')||'—'}`},
+    {title:'3. Obveznost zaupnosti',text:vrsta==='vzajemni'?'Obe stranki se zavezujeta, da zaupnih informacij ne bosta razkrili tretjim osebam brez pisnega soglasja druge stranke, ter da jih bosta uporabili izključno za namen tega sporazuma.':`${val('s2-ime')||'Prejemnik'} se zavezuje, da zaupnih informacij ${val('s1-ime')||'razkrivatelja'} ne bo razkrila tretjim osebam ter jih bo uporabila izključno za namen tega sporazuma.`},
+    {title:'4. Trajanje',text:`Obveznost zaupnosti velja ${val('nda-trajanje')} od datuma podpisa tega sporazuma.`},
+    {title:'5. Izjeme',text:'Obveznost zaupnosti ne velja za informacije, ki so javno dostopne, jih je prejemnik že poznal pred podpisom tega sporazuma, ali jih je prejel od tretje strani brez obveznosti zaupnosti.'},
+    {title:'6. Pogodbena kazen',text:val('nda-kazen')?`V primeru kršitve je kršitelj dolžan plačati pogodbeno kazen v višini ${parseFloat(val('nda-kazen')).toFixed(2)} EUR, ne glede na dejansko nastalo škodo.`:'V primeru kršitve tega sporazuma je kršitelj odgovoren za vso nastalo škodo v skladu z določbami OZ.'},
+    {title:'7. Varstvo osebnih podatkov (GDPR)',text:'Stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2. Podatki se bodo uporabili izključno za namen tega sporazuma.'},
+    {title:'8. Ostale določbe',text:'Za vse, kar ni urejeno s tem sporazumom, velja OZ RS. Pogodba je sestavljena v dveh izvodih. Pristojno sodišče je v kraju prve stranke.'}
+  ];
+
+  sections.forEach(s=>{
+    if(y>255)return;
+    doc.setTextColor(...BLUE);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(s.title,15,y);y+=5;
+    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+    const lines=doc.splitTextToSize(s.text,180);doc.text(lines,15,y);y+=lines.length*4+4;
+  });
+
+  y=Math.max(y+5,255);
+  doc.setDrawColor(...MUTED);doc.setLineWidth(0.2);doc.line(15,y,195,y);y+=7;
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('Prva stranka:',15,y);doc.text('Druga stranka:',110,y);
+  doc.setFont('helvetica','normal');doc.setTextColor(...MUTED);doc.setFontSize(7.5);
+  doc.text(val('s1-ime')||'—',15,y+5);doc.text(val('s2-ime')||'—',110,y+5);
+  doc.setDrawColor(...INK);doc.line(15,y+18,90,y+18);doc.line(110,y+18,185,y+18);
+  doc.setFontSize(7);doc.text('Podpis',15,y+22);doc.text('Podpis',110,y+22);
+  doc.setFontSize(6);doc.setTextColor(...MUTED);doc.text('Generirano z spDokumenti.si | Skladno z OZ RS in GDPR',105,288,{align:'center'});
+
+  doc.save('NDA-Sporazum-o-zaupnosti.pdf');
+  const toast=document.getElementById('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000);
+}
+
+window.onload=()=>{
+  document.getElementById('pod-datum').value=new Date().toISOString().split('T')[0];
+  updatePreview();
+};
+</script>
+</body>
+</html>
