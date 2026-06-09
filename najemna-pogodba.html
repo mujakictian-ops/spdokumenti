@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Najemna pogodba – spDokumenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f0f5ff;--white:#fff;--border:#e0e8ff;--blue:#3d7eff;--text:#1a1a1a;--muted:#6b7280;--green:#2e7d32;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}html{color-scheme:light;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg)!important;color:var(--text)!important;min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2rem;background:rgba(240,245,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+.logo{font-weight:700;font-size:1.15rem;color:var(--text);text-decoration:none;}.logo span{color:var(--blue);}
+.back-btn{background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;}
+.container{max-width:1100px;margin:0 auto;padding:7rem 1.5rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+@media(max-width:768px){.container{grid-template-columns:1fr;}}
+.form-panel{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;}
+.panel-header{background:var(--blue);padding:1rem 1.5rem;color:white;font-weight:600;font-size:.9rem;}
+.form-section{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
+.form-section:last-child{border-bottom:none;}
+.section-title{font-size:.7rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+.field-row.full{grid-template-columns:1fr;}.field-row.tri{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:.3rem;}
+label{font-size:.72rem;font-weight:600;color:var(--muted);}
+input,select,textarea{border:1.5px solid var(--border);background:var(--bg);padding:.55rem .85rem;font-family:inherit;font-size:.85rem;color:var(--text);border-radius:8px;transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--white);}
+textarea{resize:vertical;min-height:70px;}
+.info-box{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.78rem;color:#7a5c00;line-height:1.5;}
+.btn-generate{width:100%;background:var(--blue);color:white;border:none;padding:.9rem;border-radius:var(--radius);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-generate:hover{opacity:.88;}
+.generate-section{padding:1.25rem 1.5rem;}
+.preview-panel{position:sticky;top:7rem;}
+.preview-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+.doc-preview{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:2rem;font-size:.78rem;line-height:1.7;color:var(--text);box-shadow:0 4px 20px rgba(61,126,255,.06);max-height:82vh;overflow-y:auto;}
+.doc-title{text-align:center;font-size:1.1rem;font-weight:700;margin-bottom:.25rem;}
+.doc-sub{text-align:center;font-size:.7rem;color:var(--muted);margin-bottom:1.5rem;}
+.doc-parties{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;padding:1rem;background:var(--bg);border-radius:8px;}
+.party-lbl{font-size:.62rem;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:.3rem;}
+.party-txt{font-size:.75rem;line-height:1.6;}
+.doc-section{margin-bottom:.9rem;}
+.doc-section-title{font-weight:700;font-size:.78rem;margin-bottom:.35rem;color:var(--blue);}
+.doc-footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.sign-line{border-top:1px solid var(--text);padding-top:.35rem;font-size:.68rem;color:var(--muted);margin-top:2rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:white;padding:.9rem 1.5rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;z-index:1000;}
+.toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">sp<span>Dokumenti</span></a>
+  <a href="index.html" class="back-btn">← Nazaj</a>
+</nav>
+<div class="container">
+  <div class="form-panel">
+    <div class="panel-header">🏠 Najemna pogodba – skladno s SZ-1 in OZ</div>
+
+    <div class="form-section">
+      <div class="section-title">Najemodajalec (lastnik)</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="nd-ime" placeholder="npr. Janez Novak" oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov stalnega bivališča</label><input type="text" id="nd-naslov" placeholder="Slovenska 1, 1000 Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>EMŠO / Davčna številka</label><input type="text" id="nd-davcna" placeholder="npr. 1234567890123" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Telefon</label><input type="text" id="nd-tel" placeholder="041 123 456" oninput="updatePreview()"></div>
+        <div class="field"><label>E-mail</label><input type="text" id="nd-email" placeholder="janez@primer.si" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Najemnik</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="nm-ime" placeholder="npr. Ana Kovač" oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov stalnega bivališča</label><input type="text" id="nm-naslov" placeholder="Glavna 5, 2000 Maribor" oninput="updatePreview()"></div>
+        <div class="field"><label>EMŠO / Davčna številka</label><input type="text" id="nm-davcna" placeholder="npr. 9876543210987" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Telefon</label><input type="text" id="nm-tel" placeholder="040 987 654" oninput="updatePreview()"></div>
+        <div class="field"><label>E-mail</label><input type="text" id="nm-email" placeholder="ana@primer.si" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Predmet najema</div>
+      <div class="info-box">⚠️ Najemna pogodba za stanovanje je urejena s Stanovanjskim zakonom (SZ-1). Za poslovne prostore velja OZ.</div>
+      <div class="field-row">
+        <div class="field"><label>Vrsta nepremičnine</label>
+          <select id="nep-vrsta" onchange="updatePreview()">
+            <option value="stanovanje">Stanovanje</option>
+            <option value="poslovni prostor">Poslovni prostor</option>
+            <option value="garaža">Garaža</option>
+            <option value="soba">Soba</option>
+            <option value="hiša">Hiša</option>
+          </select>
+        </div>
+        <div class="field"><label>Površina (m²)</label><input type="number" id="nep-povrsina" placeholder="50" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full"><div class="field"><label>Naslov nepremičnine</label><input type="text" id="nep-naslov" placeholder="npr. Cankarjeva 10, 1000 Ljubljana" oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Leto zgraditve ⚠️ obvezno po SZ-1</label><input type="number" id="nep-leto" placeholder="npr. 1985" oninput="updatePreview()"></div>
+        <div class="field"><label>Komunalna opremljenost</label>
+          <select id="nep-komunala" onchange="updatePreview()">
+            <option value="elektrika, vodovod, kanalizacija, ogrevanje">Polna komunalna oprema</option>
+            <option value="elektrika in vodovod">Elektrika in vodovod</option>
+            <option value="elektrika">Samo elektrika</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Katastrska občina</label><input type="text" id="nep-ko" placeholder="npr. Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Številka stanovanja/parcele</label><input type="text" id="nep-st" placeholder="npr. 15" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full"><div class="field"><label>Opis opreme in priloženih prostorov</label>
+        <textarea id="nep-oprema" placeholder="npr. Stanovanje je opremljeno z: kuhinjsko opremo, pralnim strojem, hladilnikom. V najem je vključena tudi shramba v kleti." oninput="updatePreview()"></textarea>
+      </div></div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Čas in namen najema</div>
+      <div class="field-row">
+        <div class="field"><label>Namen najema</label>
+          <select id="naj-namen" onchange="updatePreview()">
+            <option value="bivanje">Bivanje (stanovanjski najem)</option>
+            <option value="poslovno dejavnost">Poslovni najem</option>
+          </select>
+        </div>
+        <div class="field"><label>Vrsta najema</label>
+          <select id="naj-vrsta" onchange="updatePreview()">
+            <option value="za določen čas">Za določen čas</option>
+            <option value="za nedoločen čas">Za nedoločen čas</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Datum začetka najema</label><input type="date" id="naj-zacetek" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum konca najema</label><input type="date" id="naj-konec" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full"><div class="field"><label>Odpovedni rok</label>
+        <select id="naj-odpoved" onchange="updatePreview()">
+          <option value="90 dni">90 dni (zakonski minimum za stanovanje)</option>
+          <option value="30 dni">30 dni</option>
+          <option value="60 dni">60 dni</option>
+          <option value="3 mesece">3 mesece</option>
+        </select>
+      </div></div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Najemnina in stroški</div>
+      <div class="field-row tri">
+        <div class="field"><label>Mesečna najemnina (€)</label><input type="number" id="fin-najemnina" placeholder="500" oninput="updatePreview()"></div>
+        <div class="field"><label>Varščina (€)</label><input type="number" id="fin-varscina" placeholder="1000" oninput="updatePreview()"></div>
+        <div class="field"><label>Plačilo do (dan v mesecu)</label><input type="number" id="fin-dan" placeholder="5" min="1" max="31" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full"><div class="field"><label>IBAN najemodajalca</label><input type="text" id="fin-iban" placeholder="SI56 0123 4567 8901 234" oninput="updatePreview()"></div></div>
+      <div class="field-row full"><div class="field"><label>Stroški (komunala, elektrika...)</label>
+        <select id="fin-stroski" onchange="updatePreview()">
+          <option value="Stroški obratovanja (elektrika, voda, ogrevanje, komunala) bremenijo najemnika.">Najemnik plača vse stroške</option>
+          <option value="Stroški ogrevanja in elektrike bremenijo najemnika, komunalni prispevki pa najemodajalca.">Najemodajalec plača komunalo</option>
+          <option value="Vse stroške obratovanja krije najemodajalec.">Najemodajalec plača vse</option>
+        </select>
+      </div></div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Datum in kraj podpisa</div>
+      <div class="field-row">
+        <div class="field"><label>Kraj podpisa</label><input type="text" id="pod-kraj" placeholder="Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum podpisa</label><input type="date" id="pod-datum" oninput="updatePreview()"></div>
+      </div>
+    </div>
+
+    <div class="generate-section">
+      <button class="btn-generate" onclick="generatePDF()">⬇ Prenesi najemno pogodbo (PDF)</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-panel">
+    <div class="preview-label">Predogled pogodbe</div>
+    <div class="doc-preview">
+      <div class="doc-title">NAJEMNA POGODBA</div>
+      <div class="doc-sub">Skladno s Stanovanjskim zakonom (SZ-1) in Obligacijskim zakonikom (OZ)</div>
+      <div class="doc-sub"><span id="prev-datum">—</span></div>
+      <div class="doc-parties">
+        <div><div class="party-lbl">Najemodajalec</div><div class="party-txt" id="prev-nd">—</div></div>
+        <div><div class="party-lbl">Najemnik</div><div class="party-txt" id="prev-nm">—</div></div>
+      </div>
+      <div class="doc-section"><div class="doc-section-title">1. Predmet najema</div><div id="prev-predmet">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">2. Čas trajanja najema</div><div id="prev-cas">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">3. Najemnina in varščina</div><div id="prev-fin">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">4. Stroški obratovanja</div><div id="prev-stroski">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">5. Obveznosti najemodajalca</div><div>Najemodajalec se zavezuje izročiti nepremičnino v stanju, primernem za dogovorjeno rabo, ter zagotavljati najemniku njeno mirno rabo med trajanjem najema.</div></div>
+      <div class="doc-section"><div class="doc-section-title">6. Obveznosti najemnika</div><div>Najemnik se zavezuje plačevati najemnino in stroške v dogovorjenih rokih, skrbeti za nepremičnino kot dober gospodar ter ne izvajati sprememb brez pisnega soglasja najemodajalca.</div></div>
+      <div class="doc-section"><div class="doc-section-title">7. Varščina</div><div id="prev-varscina">—</div></div>
+      <div class="doc-section"><div class="doc-section-title">8. GDPR – Varstvo osebnih podatkov</div><div>Stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2.</div></div>
+      <div class="doc-section"><div class="doc-section-title">9. Odpovedni razlogi (103. člen SZ-1)</div><div>Najemodajalec lahko odpove najemno pogodbo iz naslednjih razlogov: (1) najemnik ne plača najemnine ali stroškov v roku 2 mesecev, (2) najemnik povzroča večjo škodo na stanovanju, (3) najemnik opravlja dejavnost v stanovanju brez soglasja.</div></div>
+      <div class="doc-section"><div class="doc-section-title">10. Ostale določbe</div><div>Pogodba je sestavljena v dveh izvodih. Za vse, kar ni določeno, velja SZ-1 in OZ. Pristojno sodišče je v kraju nepremičnine.</div></div>
+      <div class="doc-footer">
+        <div><div style="font-size:.7rem;font-weight:700;margin-bottom:.25rem">Najemodajalec:</div><div style="font-size:.72rem;color:var(--muted)" id="prev-nd-ime">—</div><div class="sign-line">Podpis</div></div>
+        <div><div style="font-size:.7rem;font-weight:700;margin-bottom:.25rem">Najemnik:</div><div style="font-size:.72rem;color:var(--muted)" id="prev-nm-ime">—</div><div class="sign-line">Podpis</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">✓ Najemna pogodba uspešno prenesena!</div>
+<script>
+function val(id){return document.getElementById(id)?.value||'';}
+function formatDate(d){return d?new Date(d).toLocaleDateString('sl-SI'):'—';}
+
+function updatePreview(){
+  document.getElementById('prev-datum').textContent=`${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}`;
+  document.getElementById('prev-nd').innerHTML=`<strong>${val('nd-ime')||'—'}</strong><br>${[val('nd-naslov'),val('nd-davcna')?'DŠ: '+val('nd-davcna'):'',val('nd-tel'),val('nd-email')].filter(Boolean).join('<br>')}`;
+  document.getElementById('prev-nm').innerHTML=`<strong>${val('nm-ime')||'—'}</strong><br>${[val('nm-naslov'),val('nm-davcna')?'DŠ: '+val('nm-davcna'):'',val('nm-tel'),val('nm-email')].filter(Boolean).join('<br>')}`;
+  document.getElementById('prev-nd-ime').textContent=val('nd-ime')||'—';
+  document.getElementById('prev-nm-ime').textContent=val('nm-ime')||'—';
+  document.getElementById('prev-predmet').textContent=`Najemodajalec oddaja najemniku ${val('nep-vrsta')} na naslovu ${val('nep-naslov')||'—'} (površina: ${val('nep-povrsina')||'—'} m², leto zgraditve: ${val('nep-leto')||'—'}, komunalna opremljenost: ${val('nep-komunala')}) za namen ${val('naj-namen')}. ${val('nep-oprema')}`;
+  const zac=formatDate(val('naj-zacetek')), kon=formatDate(val('naj-konec'));
+  document.getElementById('prev-cas').textContent=`Najemna pogodba se sklepa ${val('naj-vrsta')}${val('naj-vrsta')==='za določen čas'?`, od ${zac} do ${kon}`:''}. Odpovedni rok znaša ${val('naj-odpoved')}.`;
+  document.getElementById('prev-fin').textContent=`Mesečna najemnina znaša ${val('fin-najemnina')||'—'} EUR in se plačuje do ${val('fin-dan')||'5'}. dne v mesecu na IBAN: ${val('fin-iban')||'—'}.`;
+  document.getElementById('prev-stroski').textContent=val('fin-stroski');
+  document.getElementById('prev-varscina').textContent=`Najemnik ob podpisu pogodbe plača varščino v višini ${val('fin-varscina')||'—'} EUR. Varščina se vrne ob izteku najema, če najemnik izpolni vse obveznosti iz pogodbe.`;
+}
+
+function generatePDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const BLUE=[61,126,255],INK=[26,26,26],MUTED=[107,114,128],LIGHT=[240,245,255];
+
+  doc.setFillColor(...BLUE);doc.rect(0,0,210,26,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('NAJEMNA POGODBA',105,12,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('Skladno s Stanovanjskim zakonom (SZ-1) in Obligacijskim zakonikom (OZ)',105,18,{align:'center'});
+  doc.setFontSize(7);doc.text(`${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}`,105,24,{align:'center'});
+
+  let y=32;
+  doc.setFillColor(...LIGHT);doc.rect(15,y,85,42,'F');doc.rect(110,y,85,42,'F');
+  doc.setTextColor(...BLUE);doc.setFont('helvetica','bold');doc.setFontSize(7);
+  doc.text('NAJEMODAJALEC',20,y+6);doc.text('NAJEMNIK',115,y+6);
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text(val('nd-ime')||'—',20,y+12);doc.text(val('nm-ime')||'—',115,y+12);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUTED);
+  [val('nd-naslov'),val('nd-davcna')?'DŠ: '+val('nd-davcna'):'',val('nd-tel'),val('nd-email')].filter(Boolean).forEach((l,i)=>doc.text(l,20,y+17+i*4.5));
+  [val('nm-naslov'),val('nm-davcna')?'DŠ: '+val('nm-davcna'):'',val('nm-tel'),val('nm-email')].filter(Boolean).forEach((l,i)=>doc.text(l,115,y+17+i*4.5));
+
+  y=80;
+  const sections=[
+    {title:'1. Predmet najema (91. člen SZ-1)',text:`Najemodajalec oddaja najemniku ${val('nep-vrsta')} na naslovu ${val('nep-naslov')||'—'} (KO: ${val('nep-ko')||'—'}, št.: ${val('nep-st')||'—'}), površine ${val('nep-povrsina')||'—'} m², leto zgraditve: ${val('nep-leto')||'—'}, komunalna opremljenost: ${val('nep-komunala')}, za namen ${val('naj-namen')}.\n${val('nep-oprema')}`},
+    {title:'2. Čas trajanja najema',text:`Najemna pogodba se sklepa ${val('naj-vrsta')}${val('naj-vrsta')==='za določen čas'?`, od ${formatDate(val('naj-zacetek'))} do ${formatDate(val('naj-konec'))}`:''}. Odpovedni rok znaša ${val('naj-odpoved')}.`},
+    {title:'3. Najemnina',text:`Mesečna najemnina znaša ${val('fin-najemnina')||'—'} EUR in se plačuje do ${val('fin-dan')||'5'}. dne v mesecu na IBAN najemodajalca: ${val('fin-iban')||'—'}.`},
+    {title:'4. Varščina',text:`Najemnik ob podpisu pogodbe plača varščino v višini ${val('fin-varscina')||'—'} EUR. Vrne se ob izteku najema, če najemnik izpolni vse obveznosti.`},
+    {title:'5. Stroški obratovanja',text:val('fin-stroski')},
+    {title:'6. Obveznosti najemodajalca',text:'Najemodajalec se zavezuje izročiti nepremičnino v stanju, primernem za dogovorjeno rabo, ter zagotavljati najemniku njeno mirno rabo med trajanjem najema.'},
+    {title:'7. Obveznosti najemnika',text:'Najemnik se zavezuje plačevati najemnino in stroške v dogovorjenih rokih, skrbeti za nepremičnino kot dober gospodar ter ne izvajati sprememb brez pisnega soglasja najemodajalca.'},
+    {title:'8. Varstvo osebnih podatkov (GDPR)',text:'Stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2. Podatki se bodo uporabili izključno za namen te pogodbe.'},
+    {title:'9. Odpovedni razlogi (103. člen SZ-1)',text:'Najemodajalec lahko odpove najemno pogodbo iz naslednjih razlogov: (1) najemnik ne plača najemnine ali stroškov v roku 2 mesecev, (2) najemnik povzroča večjo škodo na stanovanju, (3) najemnik opravlja dejavnost v stanovanju brez soglasja. Odpovedni rok znaša '+val('naj-odpoved')+'.'},
+    {title:'10. Ostale določbe',text:'Pogodba je sestavljena v dveh izvodih. Za vse, kar ni določeno s to pogodbo, velja SZ-1 in OZ. Pristojno sodišče je v kraju nepremičnine.'}
+  ];
+
+  sections.forEach(s=>{
+    if(y>255)return;
+    doc.setTextColor(...BLUE);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(s.title,15,y);y+=5;
+    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+    const lines=doc.splitTextToSize(s.text,180);doc.text(lines,15,y);y+=lines.length*4+4;
+  });
+
+  y=Math.max(y+5,255);
+  doc.setDrawColor(...MUTED);doc.setLineWidth(0.2);doc.line(15,y,195,y);y+=7;
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('Najemodajalec:',15,y);doc.text('Najemnik:',110,y);
+  doc.setFont('helvetica','normal');doc.setTextColor(...MUTED);doc.setFontSize(7.5);
+  doc.text(val('nd-ime')||'—',15,y+5);doc.text(val('nm-ime')||'—',110,y+5);
+  doc.setDrawColor(...INK);doc.line(15,y+18,90,y+18);doc.line(110,y+18,185,y+18);
+  doc.setFontSize(7);doc.text('Podpis',15,y+22);doc.text('Podpis',110,y+22);
+  doc.setFontSize(6);doc.setTextColor(...MUTED);doc.text('Generirano z spDokumenti.si | Skladno s SZ-1 in OZ RS',105,288,{align:'center'});
+
+  doc.save('Najemna-pogodba.pdf');
+  const toast=document.getElementById('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000);
+}
+
+window.onload=()=>{
+  document.getElementById('pod-datum').value=new Date().toISOString().split('T')[0];
+  updatePreview();
+};
+</script>
+</body>
+</html>
