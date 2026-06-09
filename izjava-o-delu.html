@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Izjava o opravljenem delu – spDokumenti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f0f5ff;--white:#fff;--border:#e0e8ff;--blue:#3d7eff;--text:#1a1a1a;--muted:#6b7280;--green:#2e7d32;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}html{color-scheme:light;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg)!important;color:var(--text)!important;min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2rem;background:rgba(240,245,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+.logo{font-weight:700;font-size:1.15rem;color:var(--text);text-decoration:none;}.logo span{color:var(--blue);}
+.back-btn{background:var(--white);border:1.5px solid var(--border);color:var(--text);padding:.5rem 1rem;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;}
+.container{max-width:900px;margin:0 auto;padding:7rem 1.5rem 3rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+@media(max-width:768px){.container{grid-template-columns:1fr;}}
+.form-panel{background:var(--white);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;}
+.panel-header{background:var(--blue);padding:1rem 1.5rem;color:white;font-weight:600;font-size:.9rem;}
+.form-section{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
+.form-section:last-child{border-bottom:none;}
+.section-title{font-size:.7rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem;}
+.field-row.full{grid-template-columns:1fr;}
+.field{display:flex;flex-direction:column;gap:.3rem;}
+label{font-size:.72rem;font-weight:600;color:var(--muted);}
+input,select,textarea{border:1.5px solid var(--border);background:var(--bg);padding:.55rem .85rem;font-family:inherit;font-size:.85rem;color:var(--text);border-radius:8px;transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);background:var(--white);}
+textarea{resize:vertical;min-height:80px;}
+.btn-generate{width:100%;background:var(--blue);color:white;border:none;padding:.9rem;border-radius:var(--radius);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-generate:hover{opacity:.88;}
+.generate-section{padding:1.25rem 1.5rem;}
+.preview-panel{position:sticky;top:7rem;}
+.preview-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+.doc-preview{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:2.5rem;font-size:.82rem;line-height:1.8;color:var(--text);box-shadow:0 4px 20px rgba(61,126,255,.06);}
+.doc-title{text-align:center;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:.02em;}
+.doc-body{margin-bottom:1.5rem;line-height:2;}
+.doc-footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.sign-block{text-align:center;}
+.sign-line{border-top:1px solid var(--text);padding-top:.35rem;font-size:.7rem;color:var(--muted);margin-top:2.5rem;}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--green);color:white;padding:.9rem 1.5rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;z-index:1000;}
+.toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">sp<span>Dokumenti</span></a>
+  <a href="index.html" class="back-btn">← Nazaj</a>
+</nav>
+<div class="container">
+  <div class="form-panel">
+    <div class="panel-header">✅ Izjava o opravljenem delu</div>
+    <div class="form-section">
+      <div class="section-title">Izvajalec (ti)</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="izv-ime" placeholder="npr. Janez Novak s.p." oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label><input type="text" id="izv-naslov" placeholder="Slovenska 1, 1000 Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Davčna številka</label><input type="text" id="izv-davcna" placeholder="SI12345678" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Naročnik (stranka)</div>
+      <div class="field-row full"><div class="field"><label>Ime in priimek / naziv</label><input type="text" id="narc-ime" placeholder="npr. Podjetje d.o.o." oninput="updatePreview()"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Naslov</label><input type="text" id="narc-naslov" placeholder="Glavna 5, 2000 Maribor" oninput="updatePreview()"></div>
+        <div class="field"><label>Davčna številka</label><input type="text" id="narc-davcna" placeholder="SI87654321" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Opravljeno delo</div>
+      <div class="field-row full"><div class="field"><label>Opis opravljenega dela</label>
+        <textarea id="delo-opis" placeholder="npr. Izvajalec potrjuje, da je v celoti opravil naslednje delo: Razvoj in postavitev spletne strani za naročnika, vključno z dizajnom, programiranjem in testiranjem." oninput="updatePreview()"></textarea>
+      </div></div>
+      <div class="field-row">
+        <div class="field"><label>Datum začetka del</label><input type="date" id="delo-zacetek" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum zaključka del</label><input type="date" id="delo-konec" oninput="updatePreview()"></div>
+      </div>
+      <div class="field-row full"><div class="field"><label>Vrednost opravljenega dela (€)</label><input type="number" id="delo-vrednost" placeholder="500" oninput="updatePreview()"></div></div>
+      <div class="field-row full"><div class="field"><label>Referenca (številka pogodbe / naročila)</label><input type="text" id="delo-ref" placeholder="npr. POG-2024-001" oninput="updatePreview()"></div></div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Datum in kraj</div>
+      <div class="field-row">
+        <div class="field"><label>Kraj</label><input type="text" id="pod-kraj" placeholder="Ljubljana" oninput="updatePreview()"></div>
+        <div class="field"><label>Datum</label><input type="date" id="pod-datum" oninput="updatePreview()"></div>
+      </div>
+    </div>
+    <div class="generate-section">
+      <button class="btn-generate" onclick="generatePDF()">⬇ Prenesi izjavo (PDF)</button>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-label">Predogled izjave</div>
+    <div class="doc-preview">
+      <div class="doc-title">IZJAVA O OPRAVLJENEM DELU</div>
+      <div class="doc-body" id="prev-body">—</div>
+      <div class="doc-footer">
+        <div class="sign-block">
+          <div style="font-size:.72rem;color:var(--muted)" id="prev-izv-ime">—</div>
+          <div class="sign-line">Izvajalec – podpis</div>
+        </div>
+        <div class="sign-block">
+          <div style="font-size:.72rem;color:var(--muted)" id="prev-narc-ime">—</div>
+          <div class="sign-line">Naročnik – podpis in žig</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">✓ Izjava uspešno prenesena!</div>
+<script>
+function val(id){return document.getElementById(id)?.value||'';}
+function formatDate(d){return d?new Date(d).toLocaleDateString('sl-SI'):'—';}
+
+function updatePreview(){
+  document.getElementById('prev-izv-ime').textContent=val('izv-ime')||'—';
+  document.getElementById('prev-narc-ime').textContent=val('narc-ime')||'—';
+
+  const body=`
+    <strong>Izvajalec:</strong> ${val('izv-ime')||'—'}, ${val('izv-naslov')||'—'}${val('izv-davcna')?', DŠ: '+val('izv-davcna'):''}<br><br>
+    <strong>Naročnik:</strong> ${val('narc-ime')||'—'}, ${val('narc-naslov')||'—'}${val('narc-davcna')?', DŠ: '+val('narc-davcna'):''}<br><br>
+    Izvajalec s to izjavo potrjuje, da je v celoti in v skladu z dogovorom opravil naslednje delo:<br><br>
+    <em>${val('delo-opis')||'—'}</em><br><br>
+    Delo je bilo opravljeno v obdobju od <strong>${formatDate(val('delo-zacetek'))}</strong> do <strong>${formatDate(val('delo-konec'))}</strong>.
+    ${val('delo-vrednost')?`<br>Vrednost opravljenega dela znaša <strong>${parseFloat(val('delo-vrednost')).toFixed(2).replace('.',',')} EUR</strong>.`:''}
+    ${val('delo-ref')?`<br>Referenca: ${val('delo-ref')}.`:''}
+    <br><br>
+    Naročnik s podpisom te izjave potrjuje, da je bilo delo opravljeno v celoti in v skladu z dogovorom.<br><br>
+    <strong>${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}</strong>
+  `;
+  document.getElementById('prev-body').innerHTML=body;
+}
+
+function generatePDF(){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const BLUE=[61,126,255],INK=[26,26,26],MUTED=[107,114,128],LIGHT=[240,245,255];
+
+  doc.setFillColor(...BLUE);doc.rect(0,0,210,22,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);
+  doc.text('IZJAVA O OPRAVLJENEM DELU',105,14,{align:'center'});
+
+  let y=34;
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text('Izvajalec:',15,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...MUTED);
+  doc.text(`${val('izv-ime')||'—'}, ${val('izv-naslov')||'—'}${val('izv-davcna')?', DŠ: '+val('izv-davcna'):''}`,15,y+5);
+
+  y+=14;
+  doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text('Naročnik:',15,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...MUTED);
+  doc.text(`${val('narc-ime')||'—'}, ${val('narc-naslov')||'—'}${val('narc-davcna')?', DŠ: '+val('narc-davcna'):''}`,15,y+5);
+
+  y+=18;
+  doc.setDrawColor(...BLUE);doc.setLineWidth(0.3);doc.line(15,y,195,y);y+=8;
+
+  doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);
+  const text1=`Izvajalec s to izjavo potrjuje, da je v celoti in v skladu z dogovorom opravil naslednje delo:`;
+  doc.text(doc.splitTextToSize(text1,180),15,y);y+=10;
+
+  doc.setFillColor(...LIGHT);
+  const opisLines=doc.splitTextToSize(val('delo-opis')||'—',174);
+  doc.rect(15,y-2,180,opisLines.length*5+6,'F');
+  doc.setFont('helvetica','italic');doc.setFontSize(8.5);
+  doc.text(opisLines,18,y+3);y+=opisLines.length*5+10;
+
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...INK);
+  doc.text(`Delo je bilo opravljeno v obdobju od ${formatDate(val('delo-zacetek'))} do ${formatDate(val('delo-konec'))}.`,15,y);y+=8;
+  if(val('delo-vrednost')){doc.text(`Vrednost opravljenega dela znaša ${parseFloat(val('delo-vrednost')).toFixed(2).replace('.',',')} EUR.`,15,y);y+=8;}
+  if(val('delo-ref')){doc.text(`Referenca: ${val('delo-ref')}.`,15,y);y+=8;}
+
+  y+=5;
+  doc.setFont('helvetica','italic');doc.setFontSize(8.5);doc.setTextColor(...MUTED);
+  const text2='Naročnik s podpisom te izjave potrjuje, da je bilo delo opravljeno v celoti in v skladu z dogovorom.';
+  doc.text(doc.splitTextToSize(text2,180),15,y);y+=12;
+
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...INK);
+  doc.text(`${val('pod-kraj')||'Ljubljana'}, ${formatDate(val('pod-datum'))}`,15,y);
+
+  y+=18;
+  doc.setDrawColor(...MUTED);doc.setLineWidth(0.2);doc.line(15,y,195,y);y+=7;
+  doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('Izvajalec:',15,y);doc.text('Naročnik:',110,y);
+  doc.setFont('helvetica','normal');doc.setTextColor(...MUTED);doc.setFontSize(7.5);
+  doc.text(val('izv-ime')||'—',15,y+5);doc.text(val('narc-ime')||'—',110,y+5);
+  doc.setDrawColor(...INK);doc.line(15,y+18,90,y+18);doc.line(110,y+18,185,y+18);
+  doc.setFontSize(7);doc.text('Podpis',15,y+22);doc.text('Podpis in žig',110,y+22);
+
+  doc.setFontSize(6);doc.setTextColor(...MUTED);doc.text('Generirano z spDokumenti.si',105,288,{align:'center'});
+  doc.save('Izjava-o-delu.pdf');
+  const toast=document.getElementById('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000);
+}
+
+window.onload=()=>{
+  document.getElementById('pod-datum').value=new Date().toISOString().split('T')[0];
+  document.getElementById('delo-konec').value=new Date().toISOString().split('T')[0];
+  updatePreview();
+};
+</script>
+</body>
+</html>
