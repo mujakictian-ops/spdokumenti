@@ -856,19 +856,7 @@ function saveEmail() {
 }
 
 function checkPro(url) {
-  const saved = localStorage.getItem('pro_access');
-  if (saved === 'PRO2024') {
-    window.location.href = url;
-    return;
-  }
-  const pwd = prompt('Vnesite Pro geslo za dostop do tega dokumenta:\n\nŠe nimate gesla? Kupite Pro plan!');
-  if (pwd === 'PRO2024') {
-    localStorage.setItem('pro_access', 'PRO2024');
-    window.location.href = url;
-  } else if (pwd !== null) {
-    alert('Napačno geslo. Kupite Pro plan za dostop do vseh dokumentov.');
-    document.getElementById('upgrade-modal').classList.add('open');
-  }
+  window.location.href = url;
 }
 
 function updateCounter() {
