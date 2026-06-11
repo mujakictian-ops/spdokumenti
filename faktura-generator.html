@@ -995,5 +995,51 @@ window.onload = () => {
   updatePreview();
 };
 </script>
+<script>
+// PROFIL SISTEM
+const MY_FIELDS_FAKTURA_GENERATOR = ["izd-ime", "izd-naslov", "izd-kraj", "izd-davcna", "izd-maticna", "izd-iban", "izd-email"];
+const CLEAR_FIELDS_FAKTURA_GENERATOR = ["pre-ime", "pre-naslov", "pre-kraj", "pre-davcna", "fak-stevilka", "fak-storitev-datum", "fak-narocilo", "fak-opomba"];
+const PROFILE_KEY = 'spdokumenti_profile';
+
+function saveMyData() {
+  const profile = {};
+  MY_FIELDS_FAKTURA_GENERATOR.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) profile[id] = el.value;
+  });
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  showSavedMsg('✓ Tvoji podatki shranjeni! Naslednjič klikni "Naloži shranjene".');
+}
+
+function loadMyData() {
+  const saved = localStorage.getItem(PROFILE_KEY);
+  if (!saved) { showSavedMsg('❌ Ni shranjenih podatkov. Najprej izpolni in klikni "Shrani moje podatke".'); return; }
+  const profile = JSON.parse(saved);
+  MY_FIELDS_FAKTURA_GENERATOR.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && profile[id]) { el.value = profile[id]; }
+  });
+  updatePreview();
+  showSavedMsg('✓ Shranjeni podatki naloženi!');
+}
+
+function clearForm() {
+  if (!confirm('Počistiš vse podatke in začneš znova?')) return;
+  [...MY_FIELDS_FAKTURA_GENERATOR, ...CLEAR_FIELDS_FAKTURA_GENERATOR].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  updatePreview();
+}
+
+function showSavedMsg(msg) {
+  const el = document.getElementById('saved-msg');
+  if (el) {
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 3000);
+  }
+}
+</script>
 </body>
 </html>
