@@ -120,7 +120,10 @@ async function login() {
     btn.disabled = false; btn.textContent = 'Prijavi se →';
   } else {
     showMsg('Uspešna prijava! Preusmerjam...', 'success');
-    setTimeout(() => window.location.href = 'index.html', 1000);
+    setTimeout(() => {
+      const redirect = new URLSearchParams(window.location.search).get('redirect');
+      window.location.href = redirect || 'index.html';
+    }, 1000);
   }
 }
 
