@@ -126,11 +126,10 @@ async function login() {
     setTimeout(() => {
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get('redirect');
-      if (redirect && redirect.startsWith('https://buy.stripe.com')) {
-        window.open(redirect, '_blank');
-        window.location.href = 'index.html';
+      if (redirect) {
+        window.location.href = redirect;
       } else {
-        window.location.href = redirect || 'index.html';
+        window.location.href = 'index.html';
       }
     }, 1000);
   }
@@ -164,11 +163,10 @@ _sb.auth.getSession().then(({ data: { session } }) => {
   if (session) {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get('redirect');
-    if (redirect && redirect.startsWith('https://buy.stripe.com')) {
-      window.open(redirect, '_blank');
-      window.location.href = 'index.html';
+    if (redirect) {
+      window.location.href = redirect;
     } else {
-      window.location.href = redirect || 'index.html';
+      window.location.href = 'index.html';
     }
   }
 });
