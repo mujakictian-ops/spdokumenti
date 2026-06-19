@@ -306,7 +306,7 @@ async function checkProAccess() {
   const { data: { session } } = await _sbClient.auth.getSession();
   
   if (!session) {
-    window.location.href = 'login.html';
+    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
   
@@ -325,20 +325,30 @@ async function checkProAccess() {
 function showUpgradeOverlay() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,245,255,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;';
-  overlay.innerHTML = `
-    <div style="background:white;border:1.5px solid #e0e8ff;border-radius:16px;padding:2.5rem;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(61,126,255,.1)">
-      <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
-      <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:.5rem;font-family:Plus Jakarta Sans,sans-serif">Pro plan potreben</h2>
-      <p style="color:#6b7280;font-size:.88rem;margin-bottom:1.5rem;line-height:1.6">Ta dokument je na voljo samo za Pro uporabnike. Prijavite se ali ustvarite račun, nato nadgradite.</p>
-      <div style="background:#f0f5ff;border-radius:10px;padding:1rem;margin-bottom:1.5rem">
-        <div style="font-size:.75rem;color:#6b7280;margin-bottom:.25rem">PRO PLAN</div>
-        <div style="font-size:1.8rem;font-weight:700;font-family:Plus Jakarta Sans,sans-serif">8.99€<span style="font-size:.85rem;font-weight:400;color:#6b7280">/mes</span></div>
+  
+  // Check if user is logged in
+  const _sbClient = window.supabase.createClient('https://jgogoroloaykrmtnyxgh.supabase.co', 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP');
+  _sbClient.auth.getSession().then(({ data: { session } }) => {
+    const btnHref = session 
+      ? 'https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02'
+      : 'login.html?redirect=' + encodeURIComponent(window.location.href);
+    const btnText = session ? 'Nadgradi na Pro →' : 'Prijava / Registracija →';
+    
+    overlay.innerHTML = `
+      <div style="background:white;border:1.5px solid #e0e8ff;border-radius:16px;padding:2.5rem;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(61,126,255,.1)">
+        <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
+        <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:.5rem;font-family:Plus Jakarta Sans,sans-serif">Pro plan potreben</h2>
+        <p style="color:#6b7280;font-size:.88rem;margin-bottom:1.5rem;line-height:1.6">Ta dokument je na voljo samo za Pro uporabnike.</p>
+        <div style="background:#f0f5ff;border-radius:10px;padding:1rem;margin-bottom:1.5rem">
+          <div style="font-size:.75rem;color:#6b7280;margin-bottom:.25rem">PRO PLAN</div>
+          <div style="font-size:1.8rem;font-weight:700;font-family:Plus Jakarta Sans,sans-serif">8.99€<span style="font-size:.85rem;font-weight:400;color:#6b7280">/mes</span></div>
+        </div>
+        <a href="${btnHref}" style="display:block;background:#3d7eff;color:white;padding:.85rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:.95rem;margin-bottom:.75rem;font-family:Plus Jakarta Sans,sans-serif">${btnText}</a>
+        <a href="index.html" style="display:block;color:#6b7280;font-size:.83rem;text-decoration:none">← Nazaj na glavno stran</a>
       </div>
-      <a href="login.html" style="display:block;background:#3d7eff;color:white;padding:.85rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:.95rem;margin-bottom:.75rem;font-family:Plus Jakarta Sans,sans-serif">Prijava / Registracija →</a>
-      <a href="index.html" style="display:block;color:#6b7280;font-size:.83rem;text-decoration:none">← Nazaj na glavno stran</a>
-    </div>
-  `;
-  document.body.appendChild(overlay);
+    `;
+    document.body.appendChild(overlay);
+  });
 }
 
 checkProAccess();
