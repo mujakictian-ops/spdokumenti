@@ -690,7 +690,7 @@ async function checkProAccess() {
   const { data: { session } } = await _sbClient.auth.getSession();
   
   if (!session) {
-    window.location.href = 'login.html';
+    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
   
