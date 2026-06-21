@@ -779,7 +779,12 @@ footer {
     <div class="profile-menu">
       <a href="#dokumenti" class="profile-menu-item" onclick="closeProfile()">📄 Moji dokumenti</a>
       <a href="https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02" class="profile-menu-item primary" id="profile-upgrade-btn">⭐ Nadgradi na Pro – 8.99€</a>
-      <a href="https://billing.stripe.com/p/login/3cI7sLa0Hervb2ja4I3VC00" class="profile-menu-item" id="profile-manage-btn" style="display:none">⚙️ Upravljaj naročnino</a>
+      <div id="profile-manage-btn" style="display:none;background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:10px;padding:1rem;text-align:center;margin-bottom:.5rem">
+        <div style="font-size:.72rem;color:#2e7d32;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem">Aktiven plan</div>
+        <div style="font-size:1.5rem;font-weight:700;color:#1a1a1a">Pro</div>
+        <div style="font-size:.78rem;color:#2e7d32;margin-top:.25rem">8.99€/mes · Aktivna naročnina</div>
+        <div style="font-size:.72rem;color:#666;margin-top:.5rem">Za preklic pišite na info@spdokumenti.si</div>
+      </div>
       <button class="profile-menu-item danger" onclick="logout()">🚪 Odjava</button>
     </div>
   </div>
