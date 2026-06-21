@@ -599,6 +599,156 @@ footer {
   .nav-link { display: none; }
   footer { flex-direction: column; gap: 0.4rem; text-align: center; }
 }
+
+/* Profile menu */
+.profile-btn {
+  background: #3d7eff;
+  color: white;
+  border: none;
+  padding: 0.55rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  display: none;
+}
+
+.profile-drawer {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100vh;
+  background: white;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-drawer.open {
+  right: 0;
+}
+
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 999;
+  display: none;
+}
+
+.profile-overlay.open {
+  display: block;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e8ff;
+}
+
+.profile-close {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  background: #eef3ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+}
+
+.profile-plan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.profile-plan.free {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.profile-plan.pro {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.profile-menu-item {
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  border: 1.5px solid #e0e8ff;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  font-family: inherit;
+  background: white;
+}
+
+.profile-menu-item:hover {
+  border-color: #3d7eff;
+  color: #3d7eff;
+}
+
+.profile-menu-item.primary {
+  background: #3d7eff;
+  color: white;
+  border-color: #3d7eff;
+}
+
+.profile-menu-item.primary:hover {
+  opacity: 0.88;
+  color: white;
+}
+
+.profile-menu-item.danger {
+  color: #e85c47;
+  border-color: #ffd0c8;
+}
+
+.profile-menu-item.danger:hover {
+  background: #fff0ee;
+}
 </style>
 </head>
 <body>
@@ -609,10 +759,29 @@ footer {
   <div class="nav-right">
     <a href="#kako" class="nav-link">Kako deluje</a>
     <a href="#cenik" class="nav-link">Cenik</a>
-    <span id="nav-pro-badge" style="display:none;background:#e8f5e9;color:#2e7d32;padding:.35rem .85rem;border-radius:100px;font-size:.78rem;font-weight:700">✓ Pro</span>
-    <a href="login.html" id="nav-login-btn" class="nav-link" style="font-weight:600;color:#3d7eff">Prijava</a>
-    <a href="#dokumenti" class="btn">Začni brezplačno</a>
-    <button id="nav-logout-btn" onclick="logout()" style="display:none;background:#f5f5f5;color:#333;border:1.5px solid #e0e0e0;padding:.5rem 1rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit">Odjava</button>
+    <a href="login.html" id="nav-login-btn" class="btn" style="background:#f0f5ff;color:#3d7eff;border:1.5px solid #3d7eff">Prijava</a>
+    <a href="#dokumenti" id="nav-start-btn" class="btn">Začni brezplačno</a>
+    <button id="nav-profile-btn" class="profile-btn" onclick="openProfile()">👤 Profil</button>
+  </div>
+
+  <!-- Profile overlay -->
+  <div class="profile-overlay" id="profile-overlay" onclick="closeProfile()"></div>
+
+  <!-- Profile drawer -->
+  <div class="profile-drawer" id="profile-drawer">
+    <div class="profile-header">
+      <span style="font-family:Georgia,serif;font-weight:700;font-size:1rem">sp<span style="color:#3d7eff">Dokumenti</span></span>
+      <button class="profile-close" onclick="closeProfile()">✕</button>
+    </div>
+    <div class="profile-avatar">👤</div>
+    <div class="profile-email" id="profile-email">—</div>
+    <div class="profile-plan free" id="profile-plan">Brezplačni plan</div>
+    <div class="profile-menu">
+      <a href="#dokumenti" class="profile-menu-item" onclick="closeProfile()">📄 Moji dokumenti</a>
+      <a href="https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02" class="profile-menu-item primary" id="profile-upgrade-btn">⭐ Nadgradi na Pro – 8.99€</a>
+      <a href="https://billing.stripe.com/p/login/3cI7sLa0Hervb2ja4I3VC00" class="profile-menu-item" id="profile-manage-btn" style="display:none">⚙️ Upravljaj naročnino</a>
+      <button class="profile-menu-item danger" onclick="logout()">🚪 Odjava</button>
+    </div>
   </div>
 </nav>
 
@@ -876,14 +1045,27 @@ const SUPABASE_URL = 'https://jgogoroloaykrmtnyxgh.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP';
 const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+function openProfile() {
+  document.getElementById('profile-drawer').classList.add('open');
+  document.getElementById('profile-overlay').classList.add('open');
+}
+
+function closeProfile() {
+  document.getElementById('profile-drawer').classList.remove('open');
+  document.getElementById('profile-overlay').classList.remove('open');
+}
+
 async function checkAuth() {
   const { data: { session } } = await _supabase.auth.getSession();
   
   if (session) {
-    // Prijavljen
+    // Prijavljen - pokaži profil gumb
     document.getElementById('nav-login-btn').style.display = 'none';
-    document.getElementById('nav-logout-btn').style.display = 'block';
-    document.getElementById('nav-start-btn').style.display = 'block';
+    document.getElementById('nav-start-btn').style.display = 'none';
+    document.getElementById('nav-profile-btn').style.display = 'block';
+    
+    // Nastavi email
+    document.getElementById('profile-email').textContent = session.user.email;
     
     // Preveri Pro status
     const { data: profile } = await _supabase
@@ -893,7 +1075,10 @@ async function checkAuth() {
       .single();
     
     if (profile && profile.is_pro) {
-      document.getElementById('nav-pro-badge').style.display = 'inline-block';
+      document.getElementById('profile-plan').textContent = '✓ Pro plan';
+      document.getElementById('profile-plan').className = 'profile-plan pro';
+      document.getElementById('profile-upgrade-btn').style.display = 'none';
+      document.getElementById('profile-manage-btn').style.display = 'block';
     }
   }
 }
