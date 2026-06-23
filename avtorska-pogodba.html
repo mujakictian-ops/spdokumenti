@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18250158823"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18250158823');
+</script>
+
 <title>Avtorska pogodba – spDokumenti</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -98,7 +108,6 @@ textarea { resize: vertical; min-height: 70px; }
     </div>
     <div id="saved-msg" style="display:none;margin:.5rem 1.5rem;padding:.6rem 1rem;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:.78rem;color:#2e7d32;font-weight:500;"></div>
 
-    <!-- Naročnik -->
     <div class="form-section">
       <div class="section-title">Naročnik (ti)</div>
       <div class="field-row full">
@@ -119,7 +128,6 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
     </div>
 
-    <!-- Avtor -->
     <div class="form-section">
       <div class="section-title">Avtor (izvajalec)</div>
       <div class="field-row full">
@@ -140,7 +148,6 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
     </div>
 
-    <!-- Avtorsko delo -->
     <div class="form-section">
       <div class="section-title">Avtorsko delo (99. člen ZASP)</div>
       <div class="info-box">⚠️ Avtorska pogodba se lahko sklene SAMO za dela s področja književnosti, znanosti, umetnosti ali računalniških programov (ZASP). Za ostala dela uporabite Pogodbo o delu.</div>
@@ -162,7 +169,7 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
       <div class="field-row full">
         <div class="field"><label>Opis avtorskega dela</label>
-          <textarea id="delo-opis" placeholder="npr. Avtor se zavezuje ustvariti in izročiti naročniku spletno stran, vključno z dizajnom, programiranjem in vsebino..." oninput="updatePreview()"></textarea>
+          <textarea id="delo-opis" placeholder="npr. Avtor se zavezuje ustvariti in izročiti naročniku spletno stran..." oninput="updatePreview()"></textarea>
         </div>
       </div>
       <div class="field-row">
@@ -173,7 +180,6 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
     </div>
 
-    <!-- Prenos pravic -->
     <div class="form-section">
       <div class="section-title">Prenos avtorskih pravic (ZASP)</div>
       <div class="field-row">
@@ -210,7 +216,6 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
     </div>
 
-    <!-- Honorar -->
     <div class="form-section">
       <div class="section-title">Honorar in davki</div>
       <div class="info-box">⚠️ Naročnik mora od honorarja odtegniti akontacijo dohodnine (25% od 90% bruto zneska) in prispevke (PIZ 15,5% + ZZ 6,36%). Posvetujte se z računovodjo.</div>
@@ -232,7 +237,6 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
     </div>
 
-    <!-- Podpis -->
     <div class="form-section">
       <div class="section-title">Datum in kraj podpisa</div>
       <div class="field-row">
@@ -289,15 +293,15 @@ textarea { resize: vertical; min-height: 70px; }
       </div>
       <div class="doc-section">
         <div class="doc-section-title">6. Davki in prispevki</div>
-        <div>Naročnik bo od izplačanega honorarja odtegnil in plačal akontacijo dohodnine ter prispevke za socialno varnost v skladu z veljavno davčno zakonodajo Republike Slovenije. Naročnik bo avtorju izplačal neto znesek honorarja po odtegnitvi vseh obveznih dajatev.</div>
+        <div>Naročnik bo od izplačanega honorarja odtegnil in plačal akontacijo dohodnine ter prispevke za socialno varnost v skladu z veljavno davčno zakonodajo Republike Slovenije.</div>
       </div>
       <div class="doc-section">
         <div class="doc-section-title">7. Varstvo osebnih podatkov (GDPR)</div>
-        <div>Pogodbeni stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2. Podatki se bodo uporabili izključno za namen izvajanja te pogodbe.</div>
+        <div>Pogodbeni stranki se zavezujeta varovati osebne podatke v skladu z Uredbo (EU) 2016/679 (GDPR) in ZVOP-2.</div>
       </div>
       <div class="doc-section">
         <div class="doc-section-title">8. Ostale določbe</div>
-        <div>Za vse, kar ni urejeno s to pogodbo, se uporabljajo določbe ZASP in Obligacijskega zakonika (OZ). Pogodba je sestavljena v dveh izvodih. Spori se rešujejo sporazumno, sicer je pristojno sodišče v kraju naročnika.</div>
+        <div>Za vse, kar ni urejeno s to pogodbo, se uporabljajo določbe ZASP in OZ. Pogodba je sestavljena v dveh izvodih.</div>
       </div>
 
       <div class="doc-footer">
@@ -327,32 +331,25 @@ function updatePreview() {
   const datum = formatDate(val('podpis-datum'));
   document.getElementById('prev-kraj-datum').textContent = `${kraj}, ${datum}`;
 
-  // Naročnik
   const narcLines = [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: '+val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean);
   document.getElementById('prev-narc').innerHTML = `<strong>${val('narc-ime')||'—'}</strong><br>${narcLines.join('<br>')}`;
   document.getElementById('prev-narc-ime').textContent = val('narc-ime') || '—';
 
-  // Avtor
   const avtLines = [val('avt-naslov'), val('avt-kraj'), val('avt-davcna'), val('avt-kontakt')].filter(Boolean);
   document.getElementById('prev-avt').innerHTML = `<strong>${val('avt-ime')||'—'}</strong><br>${avtLines.join('<br>')}`;
   document.getElementById('prev-avt-ime').textContent = val('avt-ime') || '—';
 
-  // Predmet
   document.getElementById('prev-predmet').textContent =
     `Avtor se po 99. členu ZASP zavezuje ustvariti in izročiti naročniku naslednje avtorsko delo: ${val('delo-vrsta')} z naslovom "${val('delo-naziv')||'—'}". ${val('delo-opis')||''}`;
 
-  // Rok
   document.getElementById('prev-rok').textContent =
     `Avtor se zavezuje izročiti dokončano avtorsko delo naročniku do: ${formatDate(val('delo-rok'))}. Kraj: ${val('delo-kraj')||'—'}.`;
 
-  // Prenos
   document.getElementById('prev-prenos').textContent =
     `Z izročitvijo dela in plačilom honorarja avtor prenese ${val('prenos-obseg')} na naročnika za ${val('prenos-trajanje')} na ozemlju ${val('prenos-ozemlje')||'Republiki Sloveniji'}. Moralne avtorske pravice ostanejo avtorju.`;
 
-  // Moralna
   document.getElementById('prev-moralna').textContent = val('moralna');
 
-  // Honorar
   const bruto = val('hon-bruto') ? val('hon-bruto') + ' EUR (bruto)' : '—';
   document.getElementById('prev-honorar').textContent =
     `Naročnik se zavezuje plačati avtorju honorar v višini ${bruto} v roku ${val('hon-rok')||'—'} dni ${val('hon-nacin')}${val('hon-iban') ? ' na IBAN: '+val('hon-iban') : ''}.`;
@@ -368,7 +365,6 @@ function generatePDF() {
   const LIGHT = [240,245,255];
   const YELLOW = [255,248,225];
 
-  // Header
   doc.setFillColor(...BLUE);
   doc.rect(0, 0, 210, 26, 'F');
   doc.setTextColor(255,255,255);
@@ -381,7 +377,6 @@ function generatePDF() {
   doc.setFontSize(7);
   doc.text(`${val('podpis-kraj')||'Ljubljana'}, ${formatDate(val('podpis-datum'))}`, 105, 23, { align: 'center' });
 
-  // Parties
   let y = 32;
   doc.setFillColor(...LIGHT);
   doc.rect(15, y, 85, 42, 'F');
@@ -405,7 +400,6 @@ function generatePDF() {
   [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: '+val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean).forEach((l,i) => doc.text(l, 20, y+17+i*4.5));
   [val('avt-naslov'), val('avt-kraj'), val('avt-davcna'), val('avt-kontakt')].filter(Boolean).forEach((l,i) => doc.text(l, 115, y+17+i*4.5));
 
-  // Warning box
   y = 80;
   doc.setFillColor(...YELLOW);
   doc.rect(15, y, 180, 10, 'F');
@@ -414,7 +408,6 @@ function generatePDF() {
   doc.setFontSize(7);
   doc.text('⚠ Pogodba sklenjena skladno z ZASP (99. člen) in Obligacijskim zakonikom (OZ) RS', 105, y+6.5, { align: 'center' });
 
-  // Sections
   y = 96;
   const sections = [
     {
@@ -466,7 +459,6 @@ function generatePDF() {
     y += lines.length * 4 + 4;
   });
 
-  // Signatures
   y = Math.max(y + 5, 240);
   doc.setDrawColor(...MUTED);
   doc.setLineWidth(0.2);
@@ -493,7 +485,6 @@ function generatePDF() {
   doc.text('Podpis in žig', 15, y+22);
   doc.text('Podpis', 110, y+22);
 
-  // Footer
   doc.setFontSize(6);
   doc.text('Generirano z spDokumenti.si | Skladno z ZASP (99. člen) in OZ RS', 105, 288, { align: 'center' });
 
@@ -520,36 +511,34 @@ const SUPABASE_KEY = 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP';
 async function checkProAccess() {
   const _sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data: { session } } = await _sbClient.auth.getSession();
-  
+
   if (!session) {
     window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
-  
+
   const { data: profile } = await _sbClient
     .from('profiles')
     .select('is_pro')
     .eq('id', session.user.id)
     .single();
-  
+
   if (!profile || !profile.is_pro) {
     showUpgradeOverlay();
   }
 }
 
-
 function showUpgradeOverlay() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,245,255,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;';
-  
-  // Check if user is logged in
+
   const _sbClient = window.supabase.createClient('https://jgogoroloaykrmtnyxgh.supabase.co', 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP');
   _sbClient.auth.getSession().then(({ data: { session } }) => {
-    const btnHref = session 
+    const btnHref = session
       ? 'https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02'
       : 'login.html?redirect=' + encodeURIComponent(window.location.href);
     const btnText = session ? 'Nadgradi na Pro →' : 'Prijava / Registracija →';
-    
+
     overlay.innerHTML = `
       <div style="background:white;border:1.5px solid #e0e8ff;border-radius:16px;padding:2.5rem;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(61,126,255,.1)">
         <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
@@ -569,8 +558,8 @@ function showUpgradeOverlay() {
 
 checkProAccess();
 </script>
+
 <script>
-// PROFIL SISTEM
 const MY_FIELDS_AVTORSKA_POGODBA = ["narc-ime", "narc-naslov", "narc-kraj", "narc-davcna", "narc-kontakt"];
 const CLEAR_FIELDS_AVTORSKA_POGODBA = ["avt-ime", "avt-naslov", "avt-kraj", "avt-davcna", "avt-kontakt", "delo-naziv", "delo-opis", "hon-bruto", "hon-iban"];
 const PROFILE_KEY = 'spdokumenti_profile';
