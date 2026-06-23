@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18250158823"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18250158823');
+</script>
+
 <title>spDokumenti – Dokumenti za s.p.</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -988,7 +998,6 @@ footer {
     <div style="background:#f5f5f5;border-radius:10px;padding:1rem;margin-bottom:1.25rem;text-align:center">
       <div style="font-size:0.75rem;color:#999;margin-bottom:0.25rem">PRO PLAN</div>
       <div style="font-size:1.8rem;font-weight:700;color:#111">8.99€<span style="font-size:0.85rem;font-weight:400;color:#999">/mes</span></div>
-      
     </div>
     <a href="login.html?redirect=https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02" class="btn-blue" style="display:block;text-align:center;text-decoration:none">Prijava / Registracija →</a>
   </div>
@@ -1064,15 +1073,12 @@ async function checkAuth() {
   const { data: { session } } = await _supabase.auth.getSession();
   
   if (session) {
-    // Prijavljen - pokaži profil gumb
     document.getElementById('nav-login-btn').style.display = 'none';
     document.getElementById('nav-start-btn').style.display = 'none';
     document.getElementById('nav-profile-btn').style.display = 'block';
     
-    // Nastavi email
     document.getElementById('profile-email').textContent = session.user.email;
     
-    // Preveri Pro status
     const { data: profile } = await _supabase
       .from('profiles')
       .select('is_pro')
