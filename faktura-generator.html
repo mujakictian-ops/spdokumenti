@@ -3,6 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18250158823"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18250158823');
+</script>
+
 <title>Faktura Generator – za s.p.</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -746,17 +756,14 @@ function updatePreview() {
   const val = id => document.getElementById(id)?.value || '';
   const sym = getSymbol();
 
-  // Header
   document.getElementById('prev-izd-ime').textContent = val('izd-ime') || 'Tvoje ime s.p.';
   document.getElementById('prev-stevilka').textContent = val('fak-stevilka') || '#2024-001';
 
-  // Dates
   const formatDate = d => d ? new Date(d).toLocaleDateString('sl-SI') : '—';
   document.getElementById('prev-datum').textContent = formatDate(val('fak-datum'));
   document.getElementById('prev-storitev').textContent = formatDate(val('fak-storitev-datum'));
   document.getElementById('prev-rok').textContent = formatDate(val('fak-rok'));
 
-  // Izdajatelj
   const izdInfo = [
     val('izd-naslov'), val('izd-kraj'),
     val('izd-davcna') ? 'ID DDV: ' + val('izd-davcna') : '',
@@ -766,7 +773,6 @@ function updatePreview() {
   document.getElementById('prev-izd-info').innerHTML =
     `<strong>${val('izd-ime') || '—'}</strong>\n${izdInfo}`.replace(/\n/g, '<br>');
 
-  // Prejemnik
   const preInfo = [
     val('pre-naslov'), val('pre-kraj'),
     val('pre-davcna') ? 'ID DDV: ' + val('pre-davcna') : ''
@@ -774,7 +780,6 @@ function updatePreview() {
   document.getElementById('prev-pre-info').innerHTML =
     `<strong>${val('pre-ime') || '—'}</strong>\n${preInfo}`.replace(/\n/g, '<br>');
 
-  // Items
   const tbody = document.getElementById('prev-items');
   tbody.innerHTML = items.map(i => `
     <tr>
@@ -786,7 +791,6 @@ function updatePreview() {
     </tr>
   `).join('');
 
-  // Totals
   const { brez, ddv, skupaj, ddvRate } = calcTotals();
   const ddvSel = document.getElementById('fak-ddv').value;
   const ddvLabel = ddvSel === 'da' ? 'DDV (22%)' : ddvSel === '9.5' ? 'DDV (9,5%)' : '';
@@ -810,7 +814,6 @@ function updatePreview() {
     prevDdvRow.style.display = 'none';
   }
 
-  // Footer
   document.getElementById('prev-iban').textContent = val('izd-iban') ? 'IBAN: ' + val('izd-iban') : '—';
   document.getElementById('prev-opomba').textContent = val('fak-opomba') || '—';
 }
@@ -826,13 +829,11 @@ function generatePDF() {
 
   const formatDate = d => d ? new Date(d).toLocaleDateString('sl-SI') : '—';
 
-  // Colors
   const INK = [26, 26, 26];
   const ACCENT = [200, 71, 42];
   const MUTED = [122, 117, 112];
   const LIGHT = [245, 240, 232];
 
-  // Header bar
   doc.setFillColor(...INK);
   doc.rect(0, 0, 210, 28, 'F');
 
@@ -851,7 +852,6 @@ function generatePDF() {
   doc.setFontSize(7);
   doc.text(`Datum izdaje: ${formatDate(val('fak-datum'))}   Datum storitve: ${formatDate(val('fak-storitev-datum'))}   Rok plačila: ${formatDate(val('fak-rok'))}`, 195, 24, { align: 'right' });
 
-  // Parties
   let y = 38;
   doc.setTextColor(...ACCENT);
   doc.setFontSize(6.5);
@@ -885,7 +885,6 @@ function generatePDF() {
   izdLines.forEach((line, i) => { doc.text(line, 15, y + 5 + i * 4.5); });
   preLines.forEach((line, i) => { doc.text(line, 110, y + 5 + i * 4.5); });
 
-  // Items table
   y = 85;
   doc.setFillColor(...INK);
   doc.rect(15, y, 180, 8, 'F');
@@ -917,7 +916,6 @@ function generatePDF() {
     y += 8;
   });
 
-  // Totals
   y += 5;
   doc.setDrawColor(...INK);
   doc.setLineWidth(0.3);
@@ -945,7 +943,6 @@ function generatePDF() {
   doc.text('ZA PLAČILO:', 130, y + 2.5);
   doc.text(skupaj.toFixed(2) + ' ' + sym, 193, y + 2.5, { align: 'right' });
 
-  // Footer
   y += 18;
   doc.setDrawColor(...MUTED);
   doc.setLineWidth(0.2);
@@ -974,7 +971,6 @@ function generatePDF() {
     doc.text(opLines, 110, y + 5);
   }
 
-  // DDV note
   if (ddvSel === 'ne') {
     doc.setFontSize(6.5);
     doc.setTextColor(...MUTED);
@@ -989,7 +985,6 @@ function generatePDF() {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// Init
 window.onload = () => {
   const today = new Date();
   const rok = new Date(today);
@@ -1005,7 +1000,6 @@ window.onload = () => {
 };
 </script>
 <script>
-// PROFIL SISTEM
 const MY_FIELDS_FAKTURA_GENERATOR = ["izd-ime", "izd-naslov", "izd-kraj", "izd-davcna", "izd-maticna", "izd-iban", "izd-email"];
 const CLEAR_FIELDS_FAKTURA_GENERATOR = ["pre-ime", "pre-naslov", "pre-kraj", "pre-davcna", "fak-stevilka", "fak-storitev-datum", "fak-narocilo", "fak-opomba"];
 const PROFILE_KEY = 'spdokumenti_profile';
