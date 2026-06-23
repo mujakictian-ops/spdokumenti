@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18250158823"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18250158823');
+</script>
+
 <title>Pogodba o delu – spDokumenti</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -79,7 +89,6 @@ nav {
   .container { grid-template-columns: 1fr; }
 }
 
-/* FORM */
 .form-panel {
   background: var(--white);
   border: 1.5px solid var(--border);
@@ -170,7 +179,6 @@ textarea { resize: vertical; min-height: 70px; }
 
 .btn-generate:hover { opacity: 0.88; }
 
-/* PREVIEW */
 .preview-panel {
   position: sticky;
   top: 7rem;
@@ -259,7 +267,6 @@ textarea { resize: vertical; min-height: 70px; }
   margin-top: 2rem;
 }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 2rem; right: 2rem;
@@ -285,21 +292,11 @@ textarea { resize: vertical; min-height: 70px; }
 </nav>
 
 <div class="container">
-  <!-- FORM -->
   <div class="form-panel">
     <div class="panel-header">📋 Pogodba o delu</div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:#f0f5ff;border-bottom:1px solid #e0e8ff;flex-wrap:wrap;gap:.5rem;">
       <span style="font-size:.78rem;color:#3d7eff;font-weight:600">👤 Tvoji podatki</span>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <button onclick="loadMyData()" style="background:#3d7eff;color:white;border:none;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">⬇ Naloži shranjene</button>
-        <button onclick="saveMyData()" style="background:#2e7d32;color:white;border:none;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">💾 Shrani moje podatke</button>
-        <button onclick="clearForm()" style="background:#f5f5f5;color:#666;border:1.5px solid #e0e0e0;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">🆕 Novo prazno</button>
-      </div>
-    </div>
-    <div id="saved-msg" style="display:none;margin:.5rem 1.5rem;padding:.6rem 1rem;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;font-size:.78rem;color:#2e7d32;font-weight:500;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:#f0f5ff;border-bottom:1px solid #e0e8ff;">
-      <span style="font-size:.78rem;color:#3d7eff;font-weight:600">👤 Tvoji podatki</span>
-      <div style="display:flex;gap:.5rem;">
         <button onclick="loadMyData()" style="background:#3d7eff;color:white;border:none;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">⬇ Naloži shranjene</button>
         <button onclick="saveMyData()" style="background:#2e7d32;color:white;border:none;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">💾 Shrani moje podatke</button>
         <button onclick="clearForm()" style="background:#f5f5f5;color:#666;border:1.5px solid #e0e0e0;padding:.4rem .9rem;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit">🆕 Novo prazno</button>
@@ -518,25 +515,19 @@ function formatDate(d) {
 }
 
 function updatePreview() {
-  document.getElementById('prev-datum').textContent = formatDate(val('podpis-datum')) ;
+  document.getElementById('prev-datum').textContent = formatDate(val('podpis-datum'));
 
-  // Naročnik
   const narcInfo = [val('narc-naslov'), val('narc-kraj'), val('narc-davcna') ? 'DŠ: ' + val('narc-davcna') : '', val('narc-kontakt')].filter(Boolean).join('\n');
   document.getElementById('prev-narc').innerHTML = `<strong>${val('narc-ime') || '—'}</strong><br>${narcInfo.replace(/\n/g,'<br>')}`;
   document.getElementById('prev-narc-ime').textContent = val('narc-ime') || '—';
 
-  // Izvajalec
   const izvInfo = [val('izv-naslov'), val('izv-kraj'), val('izv-davcna'), val('izv-kontakt')].filter(Boolean).join('\n');
   document.getElementById('prev-izv').innerHTML = `<strong>${val('izv-ime') || '—'}</strong><br>${izvInfo.replace(/\n/g,'<br>')}`;
   document.getElementById('prev-izv-ime').textContent = val('izv-ime') || '—';
 
-  // Opis
   document.getElementById('prev-opis').textContent = 'Stranki se sporazumeta o izvedbi naslednjih del: ' + (val('delo-opis') || '—');
-
-  // Rok
   document.getElementById('prev-rok').textContent = `Dela bodo izvedena do: ${formatDate(val('delo-rok'))} v/na: ${val('delo-kraj') || '—'}`;
 
-  // Plačilo
   const znesek = val('placilo-znesek') ? val('placilo-znesek') + ' €' : '—';
   const rok = val('placilo-rok') ? val('placilo-rok') + ' dni' : '—';
   const nacin = val('placilo-nacin');
@@ -553,7 +544,6 @@ function generatePDF() {
   const MUTED = [107, 114, 128];
   const LIGHT = [240, 245, 255];
 
-  // Header
   doc.setFillColor(...BLUE);
   doc.rect(0, 0, 210, 22, 'F');
   doc.setTextColor(255,255,255);
@@ -561,14 +551,12 @@ function generatePDF() {
   doc.setFontSize(14);
   doc.text('POGODBA O DELU', 105, 13, { align: 'center' });
 
-  // Subtitle
   doc.setFontSize(8);
   doc.setFont('helvetica','normal');
   const kraj = val('podpis-kraj') || 'Ljubljana';
   const datum = val('podpis-datum') ? new Date(val('podpis-datum')).toLocaleDateString('sl-SI') : '—';
   doc.text(`${kraj}, ${datum}`, 105, 19, { align: 'center' });
 
-  // Parties box
   let y = 30;
   doc.setFillColor(...LIGHT);
   doc.rect(15, y, 85, 38, 'F');
@@ -596,7 +584,6 @@ function generatePDF() {
   const izvLines = [val('izv-naslov'), val('izv-kraj'), val('izv-davcna'), val('izv-kontakt')].filter(Boolean);
   izvLines.forEach((l,i) => doc.text(l, 115, y+17+i*4));
 
-  // Sections
   y = 76;
   const sections = [
     {
@@ -632,7 +619,6 @@ function generatePDF() {
     y += lines.length * 4.5 + 5;
   });
 
-  // Signatures
   y += 5;
   doc.setDrawColor(...MUTED);
   doc.setLineWidth(0.2);
@@ -660,7 +646,6 @@ function generatePDF() {
   doc.text('Podpis', 15, y+22);
   doc.text('Podpis', 110, y+22);
 
-  // Footer
   doc.setFontSize(6.5);
   doc.setTextColor(...MUTED);
   doc.text('Generirano z spDokumenti.si', 105, 287, { align: 'center' });
@@ -672,7 +657,6 @@ function generatePDF() {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// Init
 window.onload = () => {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('podpis-datum').value = today;
@@ -688,36 +672,34 @@ const SUPABASE_KEY = 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP';
 async function checkProAccess() {
   const _sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data: { session } } = await _sbClient.auth.getSession();
-  
+
   if (!session) {
     window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
-  
+
   const { data: profile } = await _sbClient
     .from('profiles')
     .select('is_pro')
     .eq('id', session.user.id)
     .single();
-  
+
   if (!profile || !profile.is_pro) {
     showUpgradeOverlay();
   }
 }
 
-
 function showUpgradeOverlay() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,245,255,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;';
-  
-  // Check if user is logged in
+
   const _sbClient = window.supabase.createClient('https://jgogoroloaykrmtnyxgh.supabase.co', 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP');
   _sbClient.auth.getSession().then(({ data: { session } }) => {
-    const btnHref = session 
+    const btnHref = session
       ? 'https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02'
       : 'login.html?redirect=' + encodeURIComponent(window.location.href);
     const btnText = session ? 'Nadgradi na Pro →' : 'Prijava / Registracija →';
-    
+
     overlay.innerHTML = `
       <div style="background:white;border:1.5px solid #e0e8ff;border-radius:16px;padding:2.5rem;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(61,126,255,.1)">
         <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
@@ -737,8 +719,8 @@ function showUpgradeOverlay() {
 
 checkProAccess();
 </script>
+
 <script>
-// PROFIL SISTEM
 const MY_FIELDS_POGODBA_O_DELU = ["narc-ime", "narc-naslov", "narc-kraj", "narc-davcna", "narc-kontakt"];
 const CLEAR_FIELDS_POGODBA_O_DELU = ["izv-ime", "izv-naslov", "izv-kraj", "izv-davcna", "izv-kontakt", "delo-opis", "placilo-znesek", "placilo-rok", "placilo-iban"];
 const PROFILE_KEY = 'spdokumenti_profile';
@@ -781,38 +763,6 @@ function showSavedMsg(msg) {
     el.style.display = 'block';
     setTimeout(() => el.style.display = 'none', 3000);
   }
-}
-</script>
-<script>
-const MY_FIELDS = ["narc-ime", "narc-naslov", "narc-kraj", "narc-davcna", "narc-kontakt"];
-const CLEAR_FIELDS = ["izv-ime", "izv-naslov", "izv-kraj", "izv-davcna", "izv-kontakt", "delo-opis", "placilo-znesek", "placilo-rok", "placilo-iban"];
-const PROFILE_KEY = "spdokumenti_profile";
-
-function saveMyData() {
-  const profile = {};
-  MY_FIELDS.forEach(id => { const el = document.getElementById(id); if (el) profile[id] = el.value; });
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  showSavedMsg("✓ Tvoji podatki shranjeni!");
-}
-
-function loadMyData() {
-  const saved = localStorage.getItem(PROFILE_KEY);
-  if (!saved) { showSavedMsg("❌ Ni shranjenih podatkov."); return; }
-  const profile = JSON.parse(saved);
-  MY_FIELDS.forEach(id => { const el = document.getElementById(id); if (el && profile[id]) el.value = profile[id]; });
-  updatePreview();
-  showSavedMsg("✓ Shranjeni podatki naloženi!");
-}
-
-function clearForm() {
-  if (!confirm("Počistiš vse podatke?")) return;
-  [...MY_FIELDS, ...CLEAR_FIELDS].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
-  updatePreview();
-}
-
-function showSavedMsg(msg) {
-  const el = document.getElementById("saved-msg");
-  if (el) { el.textContent = msg; el.style.display = "block"; setTimeout(() => el.style.display = "none", 3000); }
 }
 </script>
 </body>
