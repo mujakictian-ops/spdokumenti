@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18250158823"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18250158823');
+</script>
+
 <title>Najemna pogodba – spDokumenti</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -123,7 +133,7 @@ textarea{resize:vertical;min-height:70px;}
         <div class="field"><label>Številka stanovanja/parcele</label><input type="text" id="nep-st" placeholder="npr. 15" oninput="updatePreview()"></div>
       </div>
       <div class="field-row full"><div class="field"><label>Opis opreme in priloženih prostorov</label>
-        <textarea id="nep-oprema" placeholder="npr. Stanovanje je opremljeno z: kuhinjsko opremo, pralnim strojem, hladilnikom. V najem je vključena tudi shramba v kleti." oninput="updatePreview()"></textarea>
+        <textarea id="nep-oprema" placeholder="npr. Stanovanje je opremljeno z: kuhinjsko opremo, pralnim strojem, hladilnikom." oninput="updatePreview()"></textarea>
       </div></div>
     </div>
 
@@ -305,36 +315,34 @@ const SUPABASE_KEY = 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP';
 async function checkProAccess() {
   const _sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const { data: { session } } = await _sbClient.auth.getSession();
-  
+
   if (!session) {
     window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
-  
+
   const { data: profile } = await _sbClient
     .from('profiles')
     .select('is_pro')
     .eq('id', session.user.id)
     .single();
-  
+
   if (!profile || !profile.is_pro) {
     showUpgradeOverlay();
   }
 }
 
-
 function showUpgradeOverlay() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(240,245,255,0.97);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Plus Jakarta Sans,sans-serif;';
-  
-  // Check if user is logged in
+
   const _sbClient = window.supabase.createClient('https://jgogoroloaykrmtnyxgh.supabase.co', 'sb_publishable_CxbeAKCs1dFKAmqOc6uCwA_NrZuq-rP');
   _sbClient.auth.getSession().then(({ data: { session } }) => {
-    const btnHref = session 
+    const btnHref = session
       ? 'https://buy.stripe.com/4gM5kCdEffBndQbawM6Ri02'
       : 'login.html?redirect=' + encodeURIComponent(window.location.href);
     const btnText = session ? 'Nadgradi na Pro →' : 'Prijava / Registracija →';
-    
+
     overlay.innerHTML = `
       <div style="background:white;border:1.5px solid #e0e8ff;border-radius:16px;padding:2.5rem;max-width:400px;text-align:center;box-shadow:0 4px 20px rgba(61,126,255,.1)">
         <div style="font-size:2.5rem;margin-bottom:1rem">🔒</div>
@@ -354,8 +362,8 @@ function showUpgradeOverlay() {
 
 checkProAccess();
 </script>
+
 <script>
-// PROFIL SISTEM
 const MY_FIELDS_NAJEMNA_POGODBA = ["nd-ime", "nd-naslov", "nd-davcna", "nd-tel", "nd-email", "fin-iban"];
 const CLEAR_FIELDS_NAJEMNA_POGODBA = ["nm-ime", "nm-naslov", "nm-davcna", "nm-tel", "nm-email", "nep-naslov", "fin-najemnina", "fin-varscina"];
 const PROFILE_KEY = 'spdokumenti_profile';
